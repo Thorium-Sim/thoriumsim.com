@@ -17,7 +17,7 @@ export const seoMeta = (
     const {
       title = "Thorium Nova",
       description = "A starship bridge simulator game. Get your friends to be Captain, Weapons, or Navigation, follow your mission briefing, and take off into the stars!",
-      image = hero,
+      image = "https://files.thoriumsim.com/file/thorium-public/storage/email-header.jpg",
       ...extra
     } = typeof override === "function" ? override(props as any) : override;
     const {location} = props;
