@@ -1,0 +1,99 @@
+{
+  "private": true,
+  "name": "remix-app-template",
+  "description": "",
+  "license": "",
+  "scripts": {
+    "build": "NODE_ENV=production npm run build:css && remix build",
+    "predev": "npm run build:css",
+    "dev": "concurrently -k \"npm:watch\" \"remix run\"",
+    "start": "remix-serve build",
+    "postinstall": "remix setup",
+    "watch": "npm-watch",
+    "build:css": "postcss --dir app/styles  app/tailwind/*.css",
+    "build:prisma": "prisma db pull && prisma generate"
+  },
+  "watch": {
+    "build:css": {
+      "patterns": [
+        "app"
+      ],
+      "extensions": "js,jsx,ts,tsx,css",
+      "ignore": "app/styles/*",
+      "quiet": true
+    }
+  },
+  "dependencies": {
+    "@aws-sdk/client-ses": "^3.32.0",
+    "@headlessui/react": "^1.4.1",
+    "@prisma/client": "^3.0.2",
+    "@remix-run/node": "latest",
+    "@remix-run/react": "latest",
+    "@remix-run/serve": "latest",
+    "@thorium-sim/react-mde": "^11.5.0",
+    "@tiptap/core": "^2.0.0-beta.105",
+    "@tiptap/extension-highlight": "^2.0.0-beta.16",
+    "@tiptap/extension-placeholder": "^2.0.0-beta.30",
+    "@tiptap/extension-typography": "^2.0.0-beta.14",
+    "@tiptap/react": "^2.0.0-beta.66",
+    "@tiptap/starter-kit": "^2.0.0-beta.104",
+    "@types/random-words": "^1.1.2",
+    "bcryptjs": "^2.4.3",
+    "concurrently": "^6.2.1",
+    "date-fns": "^2.23.0",
+    "dotenv": "^10.0.0",
+    "gray-matter": "^4.0.3",
+    "limiter": "^2.1.0",
+    "lodash.debounce": "^4.0.8",
+    "nodemailer": "^6.6.3",
+    "property-information": "^6.0.1",
+    "random-words": "^1.1.1",
+    "react": "^17.0.2",
+    "react-date-range": "^1.4.0",
+    "react-dom": "^17.0.2",
+    "react-hot-toast": "^2.1.1",
+    "react-icons": "^4.2.0",
+    "react-markdown": "^7.0.1",
+    "react-router-dom": "^6.0.0-beta.0",
+    "react-syntax-highlighter": "^15.4.4",
+    "rehype-raw": "^6.1.0",
+    "remark-gfm": "^2.0.0",
+    "remark-parse": "^10.0.0",
+    "remark-rehype": "^9.0.0",
+    "remix": "latest",
+    "remix-utils": "^1.0.2",
+    "unified": "^10.1.0",
+    "vfile": "^5.1.0"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "latest",
+    "@tailwindcss/typography": "^0.4.1",
+    "@types/bcryptjs": "^2.4.2",
+    "@types/lodash.debounce": "^4.0.6",
+    "@types/nodemailer": "^6.4.4",
+    "@types/react": "^17.0.20",
+    "@types/react-date-range": "^1.1.7",
+    "@types/react-dom": "^17.0.9",
+    "@types/react-syntax-highlighter": "^13.5.2",
+    "autoprefixer": "^10.3.4",
+    "eslint": "^7.32.0",
+    "husky": "^7.0.2",
+    "lint-staged": "^11.1.2",
+    "npm-watch": "^0.11.0",
+    "postcss": "^8.3.6",
+    "postcss-cli": "^8.3.1",
+    "prettier": "^2.4.0",
+    "prisma": "^3.0.2",
+    "shell-quote": "^1.7.2",
+    "tailwindcss": "^2.2.15",
+    "ts-eager": "^2.0.2",
+    "typescript": "^4.4.2"
+  },
+  "engines": {
+    "node": "14"
+  },
+  "sideEffects": false,
+  "volta": {
+    "node": "14.17.6"
+  }
+}

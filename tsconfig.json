@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "lib": ["DOM", "DOM.Iterable", "ES2019"],
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "target": "es2019",
+    "strict": true,
+    "skipLibCheck": true,
+    "baseUrl": ".",
+    "noEmit": true,
+    "paths": {"~/*": ["./app/*"]}
+  },
+  "include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx"]
+}
