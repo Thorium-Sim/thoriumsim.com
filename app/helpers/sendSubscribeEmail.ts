@@ -24,7 +24,7 @@ It's great to have you with us!`,
     0
   );
   await emailSender.sendMail({
-    replyTo: "alex@thoriumsim.com",
+    replyTo: "hey@thoriumsim.com",
     to: email,
     from: '"Alex from Thorium" hey@thoriumsim.com',
     subject: "Confirm your Thorium Nova subscription 🚀",

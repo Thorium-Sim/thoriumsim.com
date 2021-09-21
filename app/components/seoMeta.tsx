@@ -27,7 +27,7 @@ export const seoMeta = (
 
       viewport: "width=device-width, initial-scale=1",
 
-      "theme-color": "#9936B4",
+      "theme-color": "#000000",
 
       "twitter:card": "summary_large_image",
       "twitter:site": "Thorium Nova",
