@@ -1,6 +1,7 @@
 import {RouteData} from "@remix-run/react/routeData";
 import {Params} from "react-router-dom";
 import {AppData, MetaFunction} from "remix";
+import hero from "../images/hero.jpg";
 
 export const seoMeta = (
   override:
@@ -16,7 +17,7 @@ export const seoMeta = (
     const {
       title = "Thorium Nova",
       description = "A starship bridge simulator game. Get your friends to be Captain, Weapons, or Navigation, follow your mission briefing, and take off into the stars!",
-      image,
+      image = hero,
       ...extra
     } = typeof override === "function" ? override(props as any) : override;
     const {location} = props;
