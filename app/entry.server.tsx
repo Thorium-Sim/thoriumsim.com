@@ -9,6 +9,15 @@ export default function handleRequest(
   responseHeaders: Headers,
   remixContext: EntryContext
 ) {
+  const url = new URL(request.url);
+  if (url.pathname === "/webhooks/success") {
+    return new Response(JSON.stringify({success: true}), {
+      status: 200,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  }
   let markup = ReactDOMServer.renderToString(
     <RemixServer context={remixContext} url={request.url} />
   );

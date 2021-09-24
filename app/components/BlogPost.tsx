@@ -3,7 +3,9 @@ import {Post, User} from "@prisma/client";
 export default function BlogPost({
   post,
 }: {
-  post: Post & {User: Pick<User, "profilePictureUrl" | "displayName">};
+  post: Omit<Post, "newsletterDate" | "newsletterSent"> & {
+    User: Pick<User, "profilePictureUrl" | "displayName">;
+  };
 }) {
   return (
     <>

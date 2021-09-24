@@ -29,7 +29,6 @@ export const loader: LoaderFunction = async ({request}) => {
 };
 
 function Document({children}: {children: React.ReactNode}) {
-  let matches = useMatches();
   return (
     <html lang="en">
       <head>

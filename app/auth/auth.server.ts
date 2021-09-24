@@ -7,7 +7,9 @@ import {LocalStrategy} from "./strategies/local";
 
 // Create an instance of the authenticator, pass a generic with what your
 // strategies will return and will be stored in the session
-export let authenticator = new Authenticator<User>(sessionStorage);
+export let authenticator = new Authenticator<User & {roles: string[]}>(
+  sessionStorage
+);
 
 // Add the local strategy
 authenticator.use(
@@ -28,7 +30,8 @@ authenticator.use(
       const validPassword = await bcrypt.compare(password, user.password);
       if (!validPassword) throw new Error("Invalid password");
       const {UserRole, ...userData} = user;
-      const roles = UserRole?.map(r => r.Role?.name) || [];
+      const roles =
+        UserRole?.map(r => r.Role?.name || "").filter(Boolean) || [];
       return {...userData, roles};
     }
   ),

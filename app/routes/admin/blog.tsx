@@ -1,19 +1,62 @@
 import {Post} from "@prisma/client";
-import {Link, LoaderFunction, useRouteData} from "remix";
+import {FaSpinner} from "react-icons/fa";
+import {
+  ActionFunction,
+  Link,
+  LoaderFunction,
+  redirect,
+  usePendingFormSubmit,
+  useRouteData,
+  useSubmit,
+} from "remix";
+import {parseBody} from "remix-utils";
+import {commitSession, getSession} from "~/auth/localSession.server";
 import {db} from "~/helpers/prisma.server";
 
+export let action: ActionFunction = async ({request}) => {
+  const session = await getSession(request.headers.get("Cookie") || "");
+
+  const body = await parseBody(request);
+  if (request.method === "PUT") {
+    await db.post.update({
+      where: {post_id: Number(body.get("post_id"))},
+      data: {published: body.get("published") === "true"},
+    });
+    session.flash(
+      "toast",
+      `Post ${body.get("published") === "true" ? "published!" : "unpublished!"}`
+    );
+  }
+
+  return redirect("/admin/blog", {
+    headers: {"Set-Cookie": await commitSession(session)},
+  });
+};
 export let loader: LoaderFunction = async () => {
   const posts = await db.post.findMany({
-    orderBy: [{published: "desc"}, {publishDate: "desc"}],
+    select: {
+      publishDate: true,
+      post_id: true,
+      title: true,
+      published: true,
+    },
+    orderBy: [{published: "asc"}, {publishDate: "desc"}],
   });
   return posts;
 };
 
 export default function Blog() {
   const posts = useRouteData<Post[]>();
+  const submit = useSubmit();
+  const pendingForm = usePendingFormSubmit();
   return (
     <div>
-      <h1 className="text-4xl font-extrabold mb-8">Blog Posts</h1>
+      <div className="flex items-center">
+        <h1 className="text-4xl font-extrabold mb-8 flex-1">Blog Posts</h1>
+        <Link to="/admin/blog/new" className="thorium-button">
+          Add Post
+        </Link>
+      </div>
 
       <div className="flex flex-col">
         <div className="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -60,13 +103,32 @@ export default function Blog() {
                         {post.publishDate &&
                           new Date(post.publishDate).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 flex gap-4">
                         <input
                           name="published"
                           type="checkbox"
-                          readOnly
-                          checked={post.published || false}
+                          checked={
+                            pendingForm?.data.get("post_id") ===
+                            post.post_id.toString()
+                              ? pendingForm?.data.get("published") === "true"
+                                ? true
+                                : false
+                              : post.published || false
+                          }
+                          onChange={e => {
+                            submit(
+                              {
+                                post_id: post.post_id.toString(),
+                                published: e.currentTarget.checked.toString(),
+                              },
+                              {method: "put"}
+                            );
+                          }}
                         />
+                        {pendingForm?.data.get("post_id")?.toString() ===
+                          post.post_id.toString() && (
+                          <FaSpinner className="animate-spinner" />
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <Link

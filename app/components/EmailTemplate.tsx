@@ -3,10 +3,10 @@ import {renderToStaticMarkup} from "react-dom/server";
 import {processMarkdown} from "~/helpers/processMarkdown";
 
 const components = {
-  ul: (props: any) => <Fragment {...props} />,
-  ol: (props: any) => <Fragment {...props} />,
+  ul: ({children}: any) => <Fragment children={children} />,
+  ol: ({children}: any) => <Fragment children={children} />,
   li: ({children, ...props}: any) => (
-    <Fragment {...props}>
+    <Fragment>
       &bull; {children} <br />
     </Fragment>
   ),

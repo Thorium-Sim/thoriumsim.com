@@ -1,5 +1,5 @@
 /* This example requires Tailwind CSS v2.0+ */
-import {Fragment, useState} from "react";
+import {Fragment, useEffect, useState} from "react";
 import {Dialog, Transition} from "@headlessui/react";
 import {
   FaFileAlt,
@@ -9,16 +9,40 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import {Link, Outlet} from "react-router-dom";
-import {useMatches} from "remix";
+import {LoaderFunction, redirect, useMatches, useRouteData} from "remix";
+import {commitSession, getSession} from "~/auth/localSession.server";
+import {authenticator} from "~/auth/auth.server";
+import {json} from "remix-utils";
+import toast from "react-hot-toast";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+export const loader: LoaderFunction = async ({request}) => {
+  const session = await getSession(request.headers.get("Cookie") || "");
+  const userData = session.get(authenticator.sessionKey);
+  if (!userData || !userData.roles.includes("admin")) {
+    session.flash("error", "You do not have permission to view that page");
+    return redirect("/", {
+      headers: {"set-cookie": await commitSession(session)},
+    });
+  }
+  const toast = session.get("toast");
+  const error = session.get("error");
+  return json(
+    {toast, error},
+    {headers: {"set-cookie": await commitSession(session)}}
+  );
+};
 export default function Admin() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const matches = useMatches();
-  console.log(matches);
+  const {toast: toastMessage, error} = useRouteData<{
+    toast?: string;
+    error?: string;
+  }>();
+
   const navigation = [
     {
       name: "Dashboard",
@@ -33,6 +57,15 @@ export default function Admin() {
       current: matches.some(m => m.pathname === "/admin/blog"),
     },
   ];
+
+  useEffect(() => {
+    if (toastMessage && typeof toastMessage === "string") {
+      toast(toastMessage);
+    }
+    if (error && typeof toastMessage === "string") {
+      toast.error(error);
+    }
+  }, [toastMessage, error]);
 
   return (
     <div className="h-screen flex overflow-hidden bg-gray-100">

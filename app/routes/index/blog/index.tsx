@@ -32,7 +32,7 @@ export default function Blog() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl sm:text-5xl font-bold">Thorium Nova Blog</h1>
         {user?.roles?.includes("admin") && (
-          <Link to="compose" className="thorium-button">
+          <Link to="/admin/blog/new" className="thorium-button">
             Add Post
           </Link>
         )}
