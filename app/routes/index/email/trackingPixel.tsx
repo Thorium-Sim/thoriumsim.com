@@ -11,8 +11,9 @@ export let loader: LoaderFunction = async ({request}) => {
     });
     if (!existingOpen) {
       await db.subscriberEmailOpen.create({
+        // @ts-expect-error
         data: {
-          broadcast_id: Number(broadcastId),
+          broadcast_id: !broadcastId ? null : Number(broadcastId),
           Subscriber: {connect: {email}},
         },
       });

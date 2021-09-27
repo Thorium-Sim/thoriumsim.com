@@ -2,6 +2,7 @@
 import {Fragment, useEffect, useState} from "react";
 import {Dialog, Transition} from "@headlessui/react";
 import {
+  FaEnvelopeOpenText,
   FaFileAlt,
   FaHamburger,
   FaHome,
@@ -42,19 +43,26 @@ export default function Admin() {
     toast?: string;
     error?: string;
   }>();
-
   const navigation = [
     {
       name: "Dashboard",
       href: "/admin",
       icon: FaHome,
-      current: matches.some(m => m.pathname === "/admin"),
+      current: matches.every(
+        m => m.pathname.endsWith("/admin") || m.pathname === "/"
+      ),
     },
     {
       name: "Blog",
       href: "/admin/blog",
       icon: FaFileAlt,
-      current: matches.some(m => m.pathname === "/admin/blog"),
+      current: matches.some(m => m.pathname.startsWith("/admin/blog")),
+    },
+    {
+      name: "Newsletters",
+      href: "/admin/newsletter",
+      icon: FaEnvelopeOpenText,
+      current: matches.some(m => m.pathname.startsWith("/admin/newsletter")),
     },
   ];
 

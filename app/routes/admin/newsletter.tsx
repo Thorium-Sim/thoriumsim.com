@@ -1,59 +1,34 @@
 import {Post} from "@prisma/client";
-import {FaSpinner} from "react-icons/fa";
-import {
-  ActionFunction,
-  Link,
-  LoaderFunction,
-  redirect,
-  usePendingFormSubmit,
-  useRouteData,
-  useSubmit,
-} from "remix";
-import {parseBody} from "remix-utils";
-import {commitSession, getSession} from "~/auth/localSession.server";
+import {Link, LoaderFunction, useRouteData} from "remix";
 import {db} from "~/helpers/prisma.server";
 
-export let action: ActionFunction = async ({request}) => {
-  const session = await getSession(request.headers.get("Cookie") || "");
-
-  const body = await parseBody(request);
-  if (request.method === "PUT") {
-    await db.post.update({
-      where: {post_id: Number(body.get("post_id"))},
-      data: {published: body.get("published") === "true"},
-    });
-    session.flash(
-      "toast",
-      `Post ${body.get("published") === "true" ? "published!" : "unpublished!"}`
-    );
-  }
-
-  return redirect("/admin/blog", {
-    headers: {"Set-Cookie": await commitSession(session)},
-  });
-};
 export let loader: LoaderFunction = async () => {
   const posts = await db.post.findMany({
     select: {
-      publishDate: true,
       post_id: true,
       title: true,
-      published: true,
+      newsletterDate: true,
+      newsletterSent: true,
+      SubscriberEmailOpen: {
+        distinct: ["broadcast_id", "subscriber_id"],
+        select: {subscriber_email_open_id: true},
+      },
     },
-    orderBy: [{published: "asc"}, {publishDate: "desc"}],
-    where: {OR: [{published: true}, {newsletterSent: false}]},
+    orderBy: [{newsletterSent: "asc"}, {newsletterDate: "desc"}],
+    where: {
+      OR: [{newsletterDate: {not: null}}, {newsletterSent: {equals: true}}],
+    },
   });
   return posts;
 };
 
 export default function Blog() {
-  const posts = useRouteData<Post[]>();
-  const submit = useSubmit();
-  const pendingForm = usePendingFormSubmit();
+  const posts = useRouteData<(Post & {SubscriberEmailOpen: unknown[]})[]>();
+
   return (
     <div>
       <div className="flex items-center">
-        <h1 className="text-4xl font-extrabold mb-8 flex-1">Blog Posts</h1>
+        <h1 className="text-4xl font-extrabold mb-8 flex-1">Newsletters</h1>
         <Link to="/admin/blog/new" className="thorium-button">
           Add Post
         </Link>
@@ -76,13 +51,19 @@ export default function Blog() {
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Publish Date
+                      Newsletter Date
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Published
+                      Sent
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Email Opens
                     </th>
                     <th scope="col" className="relative px-6 py-3">
                       <span className="sr-only">Edit</span>
@@ -101,35 +82,19 @@ export default function Blog() {
                         {post.title}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                        {post.publishDate &&
-                          new Date(post.publishDate).toLocaleDateString()}
+                        {post.newsletterDate &&
+                          new Date(post.newsletterDate).toLocaleDateString()}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400 flex gap-4">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                         <input
                           name="published"
                           type="checkbox"
-                          checked={
-                            pendingForm?.data.get("post_id") ===
-                            post.post_id.toString()
-                              ? pendingForm?.data.get("published") === "true"
-                                ? true
-                                : false
-                              : post.published || false
-                          }
-                          onChange={e => {
-                            submit(
-                              {
-                                post_id: post.post_id.toString(),
-                                published: e.currentTarget.checked.toString(),
-                              },
-                              {method: "put"}
-                            );
-                          }}
+                          checked={post.newsletterSent}
+                          readOnly
                         />
-                        {pendingForm?.data.get("post_id")?.toString() ===
-                          post.post_id.toString() && (
-                          <FaSpinner className="animate-spinner" />
-                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                        {post.SubscriberEmailOpen.length}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <Link

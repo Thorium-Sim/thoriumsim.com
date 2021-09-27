@@ -33,20 +33,21 @@ model UserRole {
 }
 
 model Post {
-  post_id           Int                 @id @default(autoincrement())
-  user_id           Int
-  publishDate       DateTime?           @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  featuredImageUrl  String?
-  body              String?
-  title             String
-  slug              String              @unique
-  published         Boolean?            @default(false)
-  excerpt           String?
-  newsletterDate    DateTime?           @db.Timestamp(6)
-  newsletterSent    Boolean             @default(false)
-  User              User                @relation(fields: [user_id], references: [user_id], onDelete: SetNull, map: "Post_user_id")
-  PostSubscriberTag PostSubscriberTag[]
-  PostTag           PostTag[]
+  post_id             Int                   @id @default(autoincrement())
+  user_id             Int
+  publishDate         DateTime?             @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  featuredImageUrl    String?
+  body                String?
+  title               String
+  slug                String                @unique
+  published           Boolean?              @default(false)
+  excerpt             String?
+  newsletterDate      DateTime?             @db.Timestamp(6)
+  newsletterSent      Boolean               @default(false)
+  User                User                  @relation(fields: [user_id], references: [user_id], onDelete: SetNull, map: "Post_user_id")
+  PostSubscriberTag   PostSubscriberTag[]
+  PostTag             PostTag[]
+  SubscriberEmailOpen SubscriberEmailOpen[]
 }
 
 model PostTag {
@@ -92,7 +93,8 @@ model SubscriberEmailOpen {
   subscriber_email_open_id Int         @id @default(autoincrement())
   subscriber_id            Int?
   opened_at                DateTime    @default(now()) @db.Timestamp(6)
-  broadcast_id             Int
+  broadcast_id             Int?
+  Post                     Post?       @relation(fields: [broadcast_id], references: [post_id], onDelete: Cascade, onUpdate: NoAction)
   Subscriber               Subscriber? @relation(fields: [subscriber_id], references: [subscriber_id], onDelete: Cascade, onUpdate: NoAction)
 }
 
