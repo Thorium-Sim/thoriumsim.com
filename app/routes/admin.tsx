@@ -8,6 +8,7 @@ import {
   FaHome,
   FaPenAlt,
   FaTimes,
+  FaUserTie,
 } from "react-icons/fa";
 import {Link, Outlet} from "react-router-dom";
 import {LoaderFunction, redirect, useMatches, useRouteData} from "remix";
@@ -63,6 +64,12 @@ export default function Admin() {
       href: "/admin/newsletter",
       icon: FaEnvelopeOpenText,
       current: matches.some(m => m.pathname.startsWith("/admin/newsletter")),
+    },
+    {
+      name: "Subscribers",
+      href: "/admin/subscribers",
+      icon: FaUserTie,
+      current: matches.some(m => m.pathname.startsWith("/admin/subscribers")),
     },
   ];
 

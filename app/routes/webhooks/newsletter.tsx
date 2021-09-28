@@ -3,7 +3,7 @@ import getEmailContent from "~/components/EmailTemplate";
 import {emailSender} from "~/helpers/email";
 import {db} from "~/helpers/prisma.server";
 import {RateLimiter} from "limiter";
-const awsLimiter = new RateLimiter({interval: "sec", tokensPerInterval: 10});
+const awsLimiter = new RateLimiter({interval: "sec", tokensPerInterval: 70});
 export const action: ActionFunction = async ({request}) => {
   try {
     const newslettersToBeSent = await db.post.findMany({
