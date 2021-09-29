@@ -56,6 +56,7 @@ export const action: ActionFunction = async ({request}) => {
           where: {post_id: post.post_id},
           data: {newsletterSent: true},
         });
+        let sentEmail: string[] = [];
         for (let email of emails) {
           try {
             await awsLimiter.removeTokens(1);
@@ -66,6 +67,7 @@ export const action: ActionFunction = async ({request}) => {
               subject: `Thorium Nova - ${post.title}`,
               html: await getEmailContent(post.body, email, post.post_id),
             });
+            sentEmail.push(email);
           } catch (err) {
             if (err instanceof Error) {
               throw new Error(
@@ -74,6 +76,12 @@ export const action: ActionFunction = async ({request}) => {
             }
           }
         }
+        await db.newsletterSubscriberSends.createMany({
+          data: sentEmail.map(email => ({
+            subscriber_email: email,
+            post_id: post.post_id,
+          })),
+        });
       })
     );
     const rejected = result.filter(r => r.status === "rejected");

@@ -33,21 +33,22 @@ model UserRole {
 }
 
 model Post {
-  post_id             Int                   @id @default(autoincrement())
-  user_id             Int
-  publishDate         DateTime?             @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
-  featuredImageUrl    String?
-  body                String?
-  title               String
-  slug                String                @unique
-  published           Boolean?              @default(false)
-  excerpt             String?
-  newsletterDate      DateTime?             @db.Timestamp(6)
-  newsletterSent      Boolean               @default(false)
-  User                User                  @relation(fields: [user_id], references: [user_id], onDelete: SetNull, map: "Post_user_id")
-  PostSubscriberTag   PostSubscriberTag[]
-  PostTag             PostTag[]
-  SubscriberEmailOpen SubscriberEmailOpen[]
+  post_id                   Int                         @id @default(autoincrement())
+  user_id                   Int
+  publishDate               DateTime?                   @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  featuredImageUrl          String?
+  body                      String?
+  title                     String
+  slug                      String                      @unique
+  published                 Boolean?                    @default(false)
+  excerpt                   String?
+  newsletterDate            DateTime?                   @db.Timestamp(6)
+  newsletterSent            Boolean                     @default(false)
+  User                      User                        @relation(fields: [user_id], references: [user_id], onDelete: SetNull, map: "Post_user_id")
+  NewsletterSubscriberSends NewsletterSubscriberSends[]
+  PostSubscriberTag         PostSubscriberTag[]
+  PostTag                   PostTag[]
+  SubscriberEmailOpen       SubscriberEmailOpen[]
 }
 
 model PostTag {
@@ -65,13 +66,14 @@ model Tag {
 }
 
 model Subscriber {
-  subscriber_id       Int                   @id @default(autoincrement())
-  email               String                @unique
-  firstName           String?
-  status              String                @default("pending")
-  created_at          DateTime              @default(now()) @db.Timestamp(6)
-  SubscriberEmailOpen SubscriberEmailOpen[]
-  SubscriberTagLookup SubscriberTagLookup[]
+  subscriber_id             Int                         @id @default(autoincrement())
+  email                     String                      @unique
+  firstName                 String?
+  status                    String                      @default("pending")
+  created_at                DateTime                    @default(now()) @db.Timestamp(6)
+  NewsletterSubscriberSends NewsletterSubscriberSends[]
+  SubscriberEmailOpen       SubscriberEmailOpen[]
+  SubscriberTagLookup       SubscriberTagLookup[]
 }
 
 model SubscriberTag {
@@ -85,6 +87,7 @@ model SubscriberTagLookup {
   subscriber_tag_lookup_id Int            @id @default(autoincrement())
   subscriber_id            Int?
   subscriber_tag_id        Int?
+  createdAt                DateTime?      @default(now()) @db.Date
   Subscriber               Subscriber?    @relation(fields: [subscriber_id], references: [subscriber_id], onDelete: Cascade, onUpdate: NoAction)
   SubscriberTag            SubscriberTag? @relation(fields: [subscriber_tag_id], references: [subscriberTag_id], onDelete: Cascade, onUpdate: NoAction)
 }
@@ -104,4 +107,13 @@ model PostSubscriberTag {
   subscriber_tag_id      Int?
   Post                   Post?          @relation(fields: [post_id], references: [post_id], onDelete: Cascade, onUpdate: NoAction)
   SubscriberTag          SubscriberTag? @relation(fields: [subscriber_tag_id], references: [subscriberTag_id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model NewsletterSubscriberSends {
+  id               Int         @id @default(autoincrement())
+  subscriber_email String?
+  post_id          Int?
+  createdAt        DateTime    @default(now()) @db.Date
+  Post             Post?       @relation(fields: [post_id], references: [post_id], onDelete: Cascade, onUpdate: NoAction)
+  Subscriber       Subscriber? @relation(fields: [subscriber_email], references: [email], onDelete: Cascade, map: "NewsletterSubscriberSends_subscriber_id_fkey")
 }
