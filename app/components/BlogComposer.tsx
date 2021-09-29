@@ -21,6 +21,8 @@ export {styles as markdownStyles} from "./MarkdownInput";
 import useThrottleFn from "~/helpers/useThrottleFn";
 import {processMarkdown} from "~/helpers/processMarkdown";
 import TagSelect from "./TagSelect";
+import wordsCount from "words-count";
+
 const Checkbox = ({
   className,
   ...props
@@ -101,6 +103,12 @@ export default function Compose({
     50,
     [body]
   );
+  const previewRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (previewRef.current) {
+      previewRef.current.scrollTo(0, previewRef.current.scrollHeight);
+    }
+  }, [bodyHtml]);
   return (
     <div>
       <h1 className="text-4xl font-extrabold mb-8">Compose Blog Post</h1>
@@ -346,7 +354,7 @@ export default function Compose({
             </button>
           </div>
         </Form>
-        <div className="flex-1 prose preview-window">
+        <div className="flex-1 prose preview-window" ref={previewRef}>
           <BlogPost
             post={{
               User: {profilePictureUrl: "", displayName: "The Author"},
@@ -361,6 +369,9 @@ export default function Compose({
               user_id: 0,
             }}
           />
+          <strong>
+            <em>{wordsCount(body)} Words</em>
+          </strong>
         </div>
       </div>
     </div>
