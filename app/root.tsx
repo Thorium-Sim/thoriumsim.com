@@ -11,6 +11,12 @@ import Layout from "./components/Layout";
 import ErrorPage from "./components/Errors";
 export let links: LinksFunction = () => {
   return [
+    {
+      rel: "alternate",
+      type: "application/rss+xml",
+      title: "Thorium Blog",
+      href: "/rss.xml",
+    },
     {rel: "stylesheet", href: stylesUrl},
     {
       rel: "stylesheet",

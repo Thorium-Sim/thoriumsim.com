@@ -38,6 +38,7 @@
     "@tiptap/react": "^2.0.0-beta.66",
     "@tiptap/starter-kit": "^2.0.0-beta.104",
     "@types/random-words": "^1.1.2",
+    "@types/rss": "0.0.29",
     "bcryptjs": "^2.4.3",
     "concurrently": "^6.2.1",
     "date-fns": "^2.23.0",
@@ -63,6 +64,7 @@
     "remark-rehype": "^9.0.0",
     "remix": "latest",
     "remix-utils": "^1.0.2",
+    "rss": "^1.2.2",
     "unified": "^10.1.0",
     "vfile": "^5.1.0"
   },
