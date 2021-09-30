@@ -108,12 +108,13 @@ export default function Blog() {
                         {post.SubscriberEmailOpen.length}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                        {Math.round(
-                          (post.SubscriberEmailOpen.length /
-                            post.NewsletterSubscriberSends.length) *
-                            100
-                        )}
-                        %
+                        {post.NewsletterSubscriberSends.length === 0
+                          ? "N/A"
+                          : `${Math.round(
+                              (post.SubscriberEmailOpen.length /
+                                post.NewsletterSubscriberSends.length) *
+                                100
+                            )}%`}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <Link
