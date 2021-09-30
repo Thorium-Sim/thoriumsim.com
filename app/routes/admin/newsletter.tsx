@@ -13,6 +13,11 @@ export let loader: LoaderFunction = async () => {
         distinct: ["broadcast_id", "subscriber_id"],
         select: {subscriber_email_open_id: true},
       },
+      NewsletterSubscriberSends: {
+        select: {
+          id: true,
+        },
+      },
     },
     orderBy: [{newsletterSent: "asc"}, {newsletterDate: "desc"}],
     where: {
@@ -23,7 +28,12 @@ export let loader: LoaderFunction = async () => {
 };
 
 export default function Blog() {
-  const posts = useRouteData<(Post & {SubscriberEmailOpen: unknown[]})[]>();
+  const posts = useRouteData<
+    (Post & {
+      SubscriberEmailOpen: unknown[];
+      NewsletterSubscriberSends: unknown[];
+    })[]
+  >();
 
   return (
     <div>
@@ -57,13 +67,19 @@ export default function Blog() {
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                      Sent
+                      Send Count
                     </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
                       Email Opens
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Open Rate
                     </th>
                     <th scope="col" className="relative px-6 py-3">
                       <span className="sr-only">Edit</span>
@@ -86,15 +102,18 @@ export default function Blog() {
                           new Date(post.newsletterDate).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                        <input
-                          name="published"
-                          type="checkbox"
-                          checked={post.newsletterSent}
-                          readOnly
-                        />
+                        {post.NewsletterSubscriberSends.length}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                         {post.SubscriberEmailOpen.length}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                        {Math.round(
+                          (post.SubscriberEmailOpen.length /
+                            post.NewsletterSubscriberSends.length) *
+                            100
+                        )}
+                        %
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <Link

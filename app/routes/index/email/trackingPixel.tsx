@@ -9,12 +9,14 @@ export let loader: LoaderFunction = async ({request}) => {
     const existingOpen = await db.subscriberEmailOpen.findFirst({
       where: {Subscriber: {email}, broadcast_id: Number(broadcastId)},
     });
-    if (!existingOpen) {
+    const subscriber = await db.subscriber.findUnique({
+      where: {email},
+    });
+    if (!existingOpen && subscriber) {
       await db.subscriberEmailOpen.create({
-        // @ts-expect-error
         data: {
           broadcast_id: !broadcastId ? null : Number(broadcastId),
-          Subscriber: {connect: {email}},
+          subscriber_id: subscriber.subscriber_id,
         },
       });
     }
