@@ -1,5 +1,11 @@
 import {Post, User} from "@prisma/client";
-import {LinksFunction, LoaderFunction, Link, useRouteData} from "remix";
+import {
+  LinksFunction,
+  LoaderFunction,
+  Link,
+  useRouteData,
+  HeadersFunction,
+} from "remix";
 import {json} from "remix-utils";
 import {seoMeta} from "~/components/seoMeta";
 import {db} from "~/helpers/prisma.server";
@@ -29,6 +35,13 @@ export const loader: LoaderFunction = async ({params}) => {
   if (!post) return json({notFound: true}, {status: 404});
 
   return {...post, body: await processMarkdown(post?.body || "")};
+};
+
+export let headers: HeadersFunction = () => {
+  const allDay = 3600 * 24;
+  return {
+    "cache-control": `max-age=3600 s-maxage=${allDay}`,
+  };
 };
 
 export default function PostPage() {

@@ -1,5 +1,5 @@
 import {Post, User} from "@prisma/client";
-import {Link, LoaderFunction, useRouteData} from "remix";
+import {HeadersFunction, Link, LoaderFunction, useRouteData} from "remix";
 import {seoMeta} from "~/components/seoMeta";
 import {useUser} from "~/context/user";
 import {db} from "~/helpers/prisma.server";
@@ -17,6 +17,12 @@ export const loader: LoaderFunction = async ({request}) => {
     },
   });
   return {posts};
+};
+
+export let headers: HeadersFunction = () => {
+  return {
+    "cache-control": `max-age=60`,
+  };
 };
 
 export const meta = seoMeta({

@@ -6,7 +6,13 @@ import mainStyles from "~/styles/mainPage.css";
 import logo from "~/images/Triquetra.svg";
 import {FaDiscord, FaGithub} from "react-icons/fa";
 import Newsletter from "~/components/Newsletter";
-import {ActionFunction, LoaderFunction, redirect, useRouteData} from "remix";
+import {
+  ActionFunction,
+  HeadersFunction,
+  LoaderFunction,
+  redirect,
+  useRouteData,
+} from "remix";
 import MainContent from "../../components/MainContent.mdx";
 import {commitSession, getSession} from "~/auth/localSession.server";
 import {json} from "remix-utils";
@@ -47,6 +53,13 @@ export let action: ActionFunction = async ({request}) => {
       "Set-Cookie": await commitSession(session),
     },
   });
+};
+
+export let headers: HeadersFunction = () => {
+  const allDay = 3600 * 24;
+  return {
+    "cache-control": `max-age=3600 s-maxage=${allDay}`,
+  };
 };
 
 export let loader: LoaderFunction = async ({request}) => {

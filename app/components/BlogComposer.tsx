@@ -144,7 +144,7 @@ export default function Compose({
                   Authorization: uploadData.authorizationToken,
                   "Content-Type": "b2/x-auto",
                   "X-Bz-File-Name": `blog-images/${
-                    slug || ""
+                    slug || "extra"
                   }/${image.name.replace(/\s/gm, "-")}`,
                   "X-Bz-Content-Sha1": "do_not_verify",
                 },
