@@ -28,19 +28,15 @@ export const loader: LoaderFunction = async () => {
   const userCount = db.user
     .aggregate({_count: {_all: true}})
     .then(res => res._count._all);
-  const rsvpCount = db.subscriberTagLookup
-    .aggregate({_count: {_all: true}, where: {subscriber_tag_id: {equals: 1}}})
-    .then(res => res._count._all);
   return await Promise.all([
     activeCount,
     pendingCount,
     unsubscribedCount,
     userCount,
-    rsvpCount,
   ]);
 };
 export default function Dashboard() {
-  const [activeCount, pendingCount, unsubscribedCount, userCount, rsvpCount] =
+  const [activeCount, pendingCount, unsubscribedCount, userCount] =
     useRouteData();
   return (
     <div>
@@ -52,7 +48,6 @@ export default function Dashboard() {
           title="Unsubscribed Subscribers"
           number={unsubscribedCount}
         ></Stat>
-        <Stat title="RSVPs" number={rsvpCount}></Stat>
         <Stat title="Users" number={userCount}></Stat>
       </div>
     </div>
