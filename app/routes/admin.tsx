@@ -24,7 +24,7 @@ function classNames(...classes: string[]) {
 export const loader: LoaderFunction = async ({request}) => {
   const session = await getSession(request.headers.get("Cookie") || "");
   const userData = session.get(authenticator.sessionKey);
-  if (!userData || !userData.roles.includes("admin")) {
+  if (!userData || !userData.roles?.includes("admin")) {
     session.flash("error", "You do not have permission to view that page");
     return redirect("/", {
       headers: {"set-cookie": await commitSession(session)},

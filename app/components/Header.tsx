@@ -82,7 +82,7 @@ export default function Header({className}: {className?: string}) {
                       </span>
                     </div>
 
-                    {user.roles.includes("admin") && (
+                    {user.roles?.includes("admin") && (
                       <div className="py-1">
                         <MenuItem to="/admin">Admin</MenuItem>
                       </div>
