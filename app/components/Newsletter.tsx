@@ -1,9 +1,9 @@
 import {FaSpinner} from "react-icons/fa";
-import {Form, usePendingFormSubmit, useRouteData} from "remix";
+import {Form, useTransition, useLoaderData} from "remix";
 
 const Newsletter = () => {
-  const pendingForm = usePendingFormSubmit();
-  const routeData = useRouteData();
+  const pendingForm = useTransition().submission;
+  const routeData = useLoaderData();
   return (
     <div className="w-full flex items-center justify-center">
       <Form

@@ -1,4 +1,4 @@
-import {LoaderFunction, useRouteData} from "remix";
+import {LoaderFunction, useLoaderData} from "remix";
 import {db} from "~/helpers/prisma.server";
 
 const Stat = ({title, number}: {title: string; number: number}) => {
@@ -37,7 +37,7 @@ export const loader: LoaderFunction = async () => {
 };
 export default function Dashboard() {
   const [activeCount, pendingCount, unsubscribedCount, userCount] =
-    useRouteData();
+    useLoaderData();
   return (
     <div>
       <h1 className="text-4xl font-extrabold mb-8 flex-1">Dashboard</h1>

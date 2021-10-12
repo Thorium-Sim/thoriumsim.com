@@ -1,4 +1,4 @@
-import {Link} from "react-router-dom";
+import {Link} from "remix";
 import me from "~/images/index/me.jpg";
 
 // const BioWrapper = styled.div`

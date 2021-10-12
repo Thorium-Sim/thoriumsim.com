@@ -1,4 +1,4 @@
-import {Form, usePendingFormSubmit, Link, useRouteData} from "@remix-run/react";
+import {Form, useTransition, Link, useLoaderData} from "@remix-run/react";
 import {FaSpinner} from "react-icons/fa";
 import {ActionFunction, json, LoaderFunction, redirect} from "remix";
 import {authenticator} from "~/auth/auth.server";
@@ -52,8 +52,8 @@ export let action: ActionFunction = async ({request}) => {
 };
 
 export default function Login() {
-  let {emailError, passwordError, email} = useRouteData<LoginSubmitResults>();
-  let pendingForm = usePendingFormSubmit();
+  let {emailError, passwordError, email} = useLoaderData<LoginSubmitResults>();
+  let pendingForm = useTransition().submission;
 
   return (
     <div className="min-h-full w-full flex flex-col justify-center items-center mt-32">

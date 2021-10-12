@@ -10,8 +10,8 @@ import {
   FaTimes,
   FaUserTie,
 } from "react-icons/fa";
-import {Link, Outlet} from "react-router-dom";
-import {LoaderFunction, redirect, useMatches, useRouteData} from "remix";
+import {Link, Outlet} from "remix";
+import {LoaderFunction, redirect, useMatches, useLoaderData} from "remix";
 import {commitSession, getSession} from "~/auth/localSession.server";
 import {authenticator} from "~/auth/auth.server";
 import {json} from "remix-utils";
@@ -40,7 +40,7 @@ export const loader: LoaderFunction = async ({request}) => {
 export default function Admin() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const matches = useMatches();
-  const {toast: toastMessage, error} = useRouteData<{
+  const {toast: toastMessage, error} = useLoaderData<{
     toast?: string;
     error?: string;
   }>();

@@ -3,6 +3,7 @@ import getEmailContent from "~/components/EmailTemplate";
 import {emailSender} from "~/helpers/email";
 import {db} from "~/helpers/prisma.server";
 import {RateLimiter} from "limiter";
+import {json} from "remix-utils";
 const awsLimiter = new RateLimiter({interval: "sec", tokensPerInterval: 70});
 export const action: ActionFunction = async ({request}) => {
   try {
@@ -100,10 +101,9 @@ export const action: ActionFunction = async ({request}) => {
         )}</pre>`,
       });
     }
-    return "/webhooks/success";
+    return json({success: true}, {status: 200});
   } catch (err) {
-    console.log(err);
-    return "/webhooks/error";
+    return json({success: false}, {status: 400});
   }
 };
 export const loader: LoaderFunction = () => {

@@ -1,4 +1,4 @@
-import {Link} from "react-router-dom";
+import {Link} from "remix";
 import {useUser} from "~/context/user";
 import {Logo} from "./Logo";
 import {Menu, Transition} from "@headlessui/react";

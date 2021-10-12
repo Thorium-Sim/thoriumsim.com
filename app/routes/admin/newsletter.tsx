@@ -1,5 +1,5 @@
 import {Post} from "@prisma/client";
-import {Link, LoaderFunction, useRouteData} from "remix";
+import {Link, LoaderFunction, useLoaderData} from "remix";
 import {db} from "~/helpers/prisma.server";
 
 export let loader: LoaderFunction = async () => {
@@ -28,7 +28,7 @@ export let loader: LoaderFunction = async () => {
 };
 
 export default function Blog() {
-  const posts = useRouteData<
+  const posts = useLoaderData<
     (Post & {
       SubscriberEmailOpen: unknown[];
       NewsletterSubscriberSends: unknown[];

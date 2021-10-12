@@ -1,5 +1,3 @@
-import {LinksFunction} from "@remix-run/react/routeModules";
-import {Outlet} from "react-router-dom";
 import Meteors, {styles} from "~/components/Meteors";
 import Stars, {styles as starsStyles} from "~/components/Stars";
 import mainStyles from "~/styles/mainPage.css";
@@ -9,9 +7,9 @@ import Newsletter from "~/components/Newsletter";
 import {
   ActionFunction,
   HeadersFunction,
+  LinksFunction,
   LoaderFunction,
   redirect,
-  useRouteData,
 } from "remix";
 import MainContent from "../../components/MainContent.mdx";
 import {commitSession, getSession} from "~/auth/localSession.server";

@@ -1,4 +1,4 @@
-import {Form, usePendingFormSubmit, useRouteData} from "@remix-run/react";
+import {Form, useTransition, useLoaderData} from "@remix-run/react";
 import {FormEvent, useRef, useState} from "react";
 import {FaSpinner, FaUser} from "react-icons/fa";
 import {Input} from "../../components/Input";
@@ -47,10 +47,10 @@ export const action: ActionFunction = async ({params, request, context}) => {
   }
 };
 export default function Profile() {
-  const {uploadUrl, authorizationToken} = useRouteData<ProfileData>();
+  const {uploadUrl, authorizationToken} = useLoaderData<ProfileData>();
   const user = useUser();
   const [formPending, setFormPending] = useState(false);
-  const pendingForm = usePendingFormSubmit();
+  const pendingForm = useTransition().submission;
   const [fileImage, setFileImage] = useState(user?.profilePictureUrl);
   const fileRef = useRef<HTMLInputElement>(null);
   return (

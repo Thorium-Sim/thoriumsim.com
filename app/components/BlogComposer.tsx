@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import {Form, usePendingFormSubmit, useRouteData, useSubmit} from "remix";
+import {Form, useTransition, useLoaderData, useSubmit} from "remix";
 import {UploadData} from "~/helpers/types";
 import DatePicker from "react-datepicker";
 export {default as datePickerStyles} from "react-datepicker/dist/react-datepicker.css";
@@ -52,7 +52,7 @@ export default function Compose({
 }: {
   post?: Partial<Post & {subscriberTags: SubscriberTag[]}>;
 }) {
-  const {uploadData, subscriberTags: tags} = useRouteData<ComposeData>();
+  const {uploadData, subscriberTags: tags} = useLoaderData<ComposeData>();
   const [body, setBody] = useState(post?.body || "");
   const [title, setTitle] = useState(post?.title || "");
   const [slug, setSlug] = useState(post?.slug || "");
@@ -62,7 +62,7 @@ export default function Compose({
   const [subscriberTags, setSubscriberTags] = useState<SubscriberTag[]>(
     post?.subscriberTags || []
   );
-  const pendingForm = usePendingFormSubmit();
+  const pendingForm = useTransition().submission;
   const [featuredImageUrl, setFeaturedImageUrl] = useState(
     post?.featuredImageUrl || ""
   );
@@ -346,7 +346,7 @@ export default function Compose({
               className="thorium-button"
               disabled={!!pendingForm || formPending}
             >
-              {pendingForm?.method === "post" || formPending ? (
+              {pendingForm?.method === "POST" || formPending ? (
                 <FaSpinner className="animate-spinner" />
               ) : (
                 "Submit"

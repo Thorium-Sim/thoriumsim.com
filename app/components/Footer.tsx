@@ -1,6 +1,6 @@
 import {FaDiscord, FaGithub, FaTwitter} from "react-icons/fa";
 import Fyreworks from "./Fyreworks";
-import {Link} from "react-router-dom";
+import {Link} from "remix";
 const navigation = {
   main: [
     {name: "About", href: "/"},

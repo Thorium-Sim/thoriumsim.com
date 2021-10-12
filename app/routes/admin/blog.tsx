@@ -5,8 +5,8 @@ import {
   Link,
   LoaderFunction,
   redirect,
-  usePendingFormSubmit,
-  useRouteData,
+  useTransition,
+  useLoaderData,
   useSubmit,
 } from "remix";
 import {parseBody} from "remix-utils";
@@ -47,9 +47,9 @@ export let loader: LoaderFunction = async () => {
 };
 
 export default function Blog() {
-  const posts = useRouteData<Post[]>();
+  const posts = useLoaderData<Post[]>();
   const submit = useSubmit();
-  const pendingForm = usePendingFormSubmit();
+  const pendingForm = useTransition().submission;
   return (
     <div>
       <div className="flex items-center">
@@ -109,9 +109,10 @@ export default function Blog() {
                           name="published"
                           type="checkbox"
                           checked={
-                            pendingForm?.data.get("post_id") ===
+                            pendingForm?.formData.get("post_id") ===
                             post.post_id.toString()
-                              ? pendingForm?.data.get("published") === "true"
+                              ? pendingForm?.formData.get("published") ===
+                                "true"
                                 ? true
                                 : false
                               : post.published || false
@@ -126,7 +127,7 @@ export default function Blog() {
                             );
                           }}
                         />
-                        {pendingForm?.data.get("post_id")?.toString() ===
+                        {pendingForm?.formData.get("post_id")?.toString() ===
                           post.post_id.toString() && (
                           <FaSpinner className="animate-spinner" />
                         )}

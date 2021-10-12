@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import {generateFeed} from "./helpers/rss";
 import {md5} from "./helpers/md5";
 dotenv.config({path: ".env"});
+
 export default async function handleRequest(
   request: Request,
   responseStatusCode: number,
@@ -20,25 +21,21 @@ export default async function handleRequest(
       },
     });
   }
-  if (url.pathname === "/webhooks/success") {
-    return new Response(JSON.stringify({success: true}), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  }
   let markup = ReactDOMServer.renderToString(
     <RemixServer context={remixContext} url={request.url} />
   );
-  let time = Date.now();
+  if (responseHeaders.get("content-type")) {
+    return new Response(decodeURIComponent(markup), {
+      status: responseStatusCode,
+      headers: responseHeaders,
+    });
+  }
   const etag = md5(markup);
   if (etag === request.headers.get("if-none-match")) {
     return new Response("", {
       status: 304,
     });
   }
-  console.log(Date.now() - time);
   return new Response("<!DOCTYPE html>" + markup, {
     status: responseStatusCode,
     headers: {

@@ -1,5 +1,5 @@
 import {Post, User} from "@prisma/client";
-import {HeadersFunction, Link, LoaderFunction, useRouteData} from "remix";
+import {HeadersFunction, Link, LoaderFunction, useLoaderData} from "remix";
 import {seoMeta} from "~/components/seoMeta";
 import {useUser} from "~/context/user";
 import {db} from "~/helpers/prisma.server";
@@ -31,7 +31,7 @@ export const meta = seoMeta({
 });
 
 export default function Blog() {
-  const {posts} = useRouteData<{roles: string[]; posts: Post[]}>();
+  const {posts} = useLoaderData<{roles: string[]; posts: Post[]}>();
   const user = useUser();
   return (
     <div className="mt-32 px-8 w-full max-w-4xl mx-auto">

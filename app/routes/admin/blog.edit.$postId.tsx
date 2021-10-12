@@ -4,7 +4,7 @@ import {
   LinksFunction,
   LoaderFunction,
   redirect,
-  useRouteData,
+  useLoaderData,
 } from "remix";
 import {json, parseBody} from "remix-utils";
 import {authenticator} from "~/auth/auth.server";
@@ -118,6 +118,6 @@ export const action: ActionFunction = async ({request}) => {
 };
 
 export default function PostEdit() {
-  const {post} = useRouteData();
+  const {post} = useLoaderData();
   return <Compose post={post} />;
 }

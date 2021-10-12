@@ -1,18 +1,12 @@
 import {Post, User} from "@prisma/client";
-import {
-  LinksFunction,
-  LoaderFunction,
-  Link,
-  useRouteData,
-  HeadersFunction,
-} from "remix";
+import {LoaderFunction, useLoaderData, HeadersFunction} from "remix";
 import {json} from "remix-utils";
 import {seoMeta} from "~/components/seoMeta";
 import {db} from "~/helpers/prisma.server";
 import {processMarkdown} from "~/helpers/processMarkdown";
-import ErrorPage, {styles} from "~/components/Errors";
 import {useEffect} from "react";
 import BlogPost from "~/components/BlogPost";
+
 export const meta = seoMeta(({data}): Record<string, string> => {
   if (data.notFound) return {title: `Thorium Nova - Page Not Found`};
   return {
@@ -22,17 +16,13 @@ export const meta = seoMeta(({data}): Record<string, string> => {
   };
 });
 
-export const links: LinksFunction = args => {
-  if (args?.data?.notFound) return [{rel: "stylesheet", href: styles}];
-  return [];
-};
 export const loader: LoaderFunction = async ({params}) => {
   const {slug} = params;
   const post = await db.post.findUnique({
     where: {slug},
     include: {User: {select: {displayName: true, profilePictureUrl: true}}},
   });
-  if (!post) return json({notFound: true}, {status: 404});
+  if (!post) throw json({notFound: true}, {status: 404});
 
   return {...post, body: await processMarkdown(post?.body || "")};
 };
@@ -45,19 +35,7 @@ export let headers: HeadersFunction = () => {
 };
 
 export default function PostPage() {
-  const post = useRouteData<(Post & {User: User}) | {notFound: true}>();
-  if ("notFound" in post) {
-    return (
-      <ErrorPage
-        title="404"
-        text={
-          <Link to="/" className="text-thorium-300 hover:text-thorium-400 mt-8">
-            Return Home
-          </Link>
-        }
-      />
-    );
-  }
+  const post = useLoaderData<Post & {User: User}>();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);

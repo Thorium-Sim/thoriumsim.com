@@ -1,5 +1,5 @@
 import {Subscriber} from "@prisma/client";
-import {LoaderFunction, useRouteData} from "remix";
+import {LoaderFunction, useLoaderData} from "remix";
 import {db} from "~/helpers/prisma.server";
 
 export const loader: LoaderFunction = async () => {
@@ -16,7 +16,7 @@ export const loader: LoaderFunction = async () => {
   });
 };
 export default function Blog() {
-  const subscriber = useRouteData<Subscriber[]>();
+  const subscriber = useLoaderData<Subscriber[]>();
 
   return (
     <div>
