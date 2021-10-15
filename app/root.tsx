@@ -79,7 +79,6 @@ export default function App() {
         <Outlet />
         <Toaster position="bottom-left" />
       </UserProvider>
-      <Scripts />
     </Document>
   );
 }
