@@ -49,11 +49,16 @@ export const loader: LoaderFunction = async ({ request }) => {
   };
 };
 
+export const handle = {
+  noLayout: true,
+};
+
 export const meta: MetaFunction = ({ data }) => {
   return {
     title: `Authorize ${data.appName}`,
   };
 };
+
 export default function Authorize() {
   const { appName, scopes, redirectUrl } = useLoaderData() as {
     appName: string;

@@ -17,7 +17,7 @@ model User {
   passwordResetToken     String?
   passwordResetExpire    DateTime?                @db.Timestamp(6)
   ConnectedAccount       ConnectedAccount[]
-  CoreLayouts            CoreLayouts[]
+  CoreLayout             CoreLayout[]
   OAuthAccessToken       OAuthAccessToken[]
   OAuthAuthorizationCode OAuthAuthorizationCode[]
   Post                   Post[]
@@ -34,14 +34,6 @@ model ConnectedAccount {
   expiresAt           DateTime? @db.Timestamp(6)
   account_id          String?
   User                User?     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
-}
-
-model CoreLayouts {
-  id          Int     @id @default(autoincrement())
-  user_id     Int?
-  name        String?
-  layout_json String? @default("{\"global\":{\"splitterSize\":1,\"splitterExtra\":4,\"tabEnableFloat\":true,\"tabSetEnableClose\":true,\"tabSetMinWidth\":100,\"tabSetMinHeight\":100,\"borderMinSize\":100,\"borderEnableAutoHide\":true,\"enableEdgeDock\":true},\"borders\":[{\"type\":\"border\",\"location\":\"bottom\",\"children\":[]},{\"type\":\"border\",\"location\":\"left\",\"children\":[]},{\"type\":\"border\",\"location\":\"right\",\"children\":[]}],\"layout\":{\"type\":\"row\",\"children\":[]}}")
-  User        User?   @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 }
 
 model NewsletterSubscriberSends {
@@ -229,4 +221,13 @@ model UserRole {
   role_id     Int?
   Role        Role? @relation(fields: [role_id], references: [role_id], onDelete: Cascade, onUpdate: NoAction, map: "UserRole_role_id")
   User        User? @relation(fields: [user_id], references: [user_id], onDelete: Cascade, map: "UserRole_User_id")
+}
+
+model CoreLayout {
+  id          Int      @id(map: "CoreLayouts_pkey") @default(autoincrement())
+  user_id     Int?
+  name        String?
+  layout_json String?  @default("{\"global\":{\"splitterSize\":1,\"splitterExtra\":4,\"tabEnableFloat\":true,\"tabSetEnableClose\":true,\"tabSetMinWidth\":100,\"tabSetMinHeight\":100,\"borderMinSize\":100,\"borderEnableAutoHide\":true,\"enableEdgeDock\":true},\"borders\":[{\"type\":\"border\",\"location\":\"bottom\",\"children\":[]},{\"type\":\"border\",\"location\":\"left\",\"children\":[]},{\"type\":\"border\",\"location\":\"right\",\"children\":[]}],\"layout\":{\"type\":\"row\",\"children\":[]}}")
+  deleted     Boolean? @default(false)
+  User        User?    @relation(fields: [user_id], references: [user_id], onDelete: Cascade, map: "CoreLayouts_user_id_fkey")
 }

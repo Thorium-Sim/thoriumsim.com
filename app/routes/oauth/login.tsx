@@ -64,6 +64,9 @@ export let loader: LoaderFunction = async ({ request }) => {
   return { appName };
 };
 
+export const handle = {
+  noLayout: true,
+};
 export const meta: MetaFunction = ({ data }) => {
   return {
     title: `Login to Authorize ${data.appName}`,

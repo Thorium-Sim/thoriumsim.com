@@ -171,6 +171,9 @@ export const meta: MetaFunction = ({ data }) => {
     title: `Authorize Application`,
   };
 };
+export const handle = {
+  noLayout: true,
+};
 export default function Device() {
   const action = useActionData();
   const { user_code } = useLoaderData() as {
