@@ -9,8 +9,8 @@ const headers = {
   "Content-Type": "application/json",
 };
 export const loader: LoaderFunction = async ({ request }) => {
-  const { user_id } = await validateToken(request, ["identity"]);
   if (request.method === "GET") {
+    const { user_id } = await validateToken(request, []);
     const coreLayouts = await db.coreLayout.findMany({
       where: {
         user_id,
@@ -28,6 +28,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     );
   }
   if (request.method === "POST") {
+    const { user_id } = await validateToken(request, []);
     const body = await request.json();
 
     const record = await db.coreLayout.create({
@@ -45,6 +46,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     );
   }
   if (request.method === "PUT") {
+    const { user_id } = await validateToken(request, []);
     const body = await request.json();
 
     const record = await db.coreLayout.update({
@@ -65,6 +67,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     );
   }
   if (request.method === "DELETE") {
+    await validateToken(request, []);
     const body = await request.json();
 
     const record = await db.coreLayout.update({
