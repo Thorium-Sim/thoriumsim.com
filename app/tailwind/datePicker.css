@@ -1,0 +1,27 @@
+:root {
+  --calendar-selected: theme("colors.brand");
+}
+.rdrDayToday .rdrDayNumber span:after {
+  @apply bg-brand;
+}
+.rdrCalendarWrapper {
+  @apply bg-tgray-800 text-white;
+}
+.rdrMonthAndYearPickers select {
+  @apply text-gray-300;
+}
+.rdrNextPrevButton {
+  @apply bg-tgray-600 text-gray-300 fill-current;
+}
+.rdrNextButton i {
+  @apply border-l-gray-300;
+}
+.rdrPprevButton i {
+  @apply border-r-gray-300;
+}
+.rdrDayNumber span {
+  @apply text-gray-300;
+}
+.rdrDayPassive .rdrDayNumber span {
+  @apply text-gray-500;
+}

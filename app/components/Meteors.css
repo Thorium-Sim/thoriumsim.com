@@ -1,0 +1,78 @@
+.meteors {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  overflow: hidden;
+  z-index: 0;
+}
+.meteor {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  transform-origin: top left;
+  animation: meteor 30s var(--meteorDelay, 0s) infinite linear;
+  opacity: 0;
+  pointer-events: none;
+}
+.meteor:before {
+  content: "";
+  display: block;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.3) 15%,
+    rgba(255, 255, 255, 0)
+  );
+  height: 0.5rem;
+  width: 200px;
+  border-radius: 900px 100% 100% 900px;
+  position: absolute;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+.meteor:after {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 0;
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 100%;
+  background: linear-gradient(
+    40deg,
+    rgba(255, 255, 255, 1),
+    rgba(128, 128, 128, 0)
+  );
+}
+
+@keyframes meteor {
+  0% {
+    opacity: 0;
+    transform: translate(var(--meteorX, 40%), var(--meteorY, 60%))
+      rotate(-45deg);
+  }
+
+  1% {
+    opacity: 1;
+  }
+  3% {
+    opacity: 1;
+  }
+  4% {
+    opacity: 0;
+    transform: translate(
+        calc(var(--meteorX, 40%) - 300px),
+        calc(var(--meteorY, 60%) + 300px)
+      )
+      rotate(-45deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(
+        calc(var(--meteorX, 40%) - 300px),
+        calc(var(--meteorY, 60%) + 300px)
+      )
+      rotate(-45deg);
+  }
+}

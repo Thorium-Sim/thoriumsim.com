@@ -1,0 +1,232 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id                Int                      @id(map: "users_pkey") @default(autoincrement())
+  email                  String                   @unique(map: "users_email_key")
+  password               String
+  profilePictureUrl      String?
+  displayName            String?
+  bio                    String?
+  passwordResetToken     String?
+  passwordResetExpire    DateTime?                @db.Timestamp(6)
+  ConnectedAccount       ConnectedAccount[]
+  CoreLayouts            CoreLayouts[]
+  OAuthAccessToken       OAuthAccessToken[]
+  OAuthAuthorizationCode OAuthAuthorizationCode[]
+  Post                   Post[]
+  UserRole               UserRole[]
+}
+
+model ConnectedAccount {
+  connectedAccount_id Int       @id @default(autoincrement())
+  user_id             Int?
+  type                String
+  access_token        String?
+  refresh_token       String?
+  createdAt           DateTime? @db.Timestamp(6)
+  expiresAt           DateTime? @db.Timestamp(6)
+  account_id          String?
+  User                User?     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model CoreLayouts {
+  id          Int     @id @default(autoincrement())
+  user_id     Int?
+  name        String?
+  layout_json String? @default("{\"global\":{\"splitterSize\":1,\"splitterExtra\":4,\"tabEnableFloat\":true,\"tabSetEnableClose\":true,\"tabSetMinWidth\":100,\"tabSetMinHeight\":100,\"borderMinSize\":100,\"borderEnableAutoHide\":true,\"enableEdgeDock\":true},\"borders\":[{\"type\":\"border\",\"location\":\"bottom\",\"children\":[]},{\"type\":\"border\",\"location\":\"left\",\"children\":[]},{\"type\":\"border\",\"location\":\"right\",\"children\":[]}],\"layout\":{\"type\":\"row\",\"children\":[]}}")
+  User        User?   @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+}
+
+model NewsletterSubscriberSends {
+  id               Int         @id @default(autoincrement())
+  subscriber_email String?
+  post_id          Int?
+  createdAt        DateTime    @default(now()) @db.Date
+  Post             Post?       @relation(fields: [post_id], references: [post_id], onDelete: Cascade, onUpdate: NoAction)
+  Subscriber       Subscriber? @relation(fields: [subscriber_email], references: [email], onDelete: Cascade, map: "NewsletterSubscriberSends_subscriber_id_fkey")
+}
+
+model OAuthAccessToken {
+  id                    Int                     @id @default(autoincrement())
+  access_token          String                  @unique
+  user_id               Int?
+  client_id             String?
+  OAuthApp              OAuthApp?               @relation(fields: [client_id], references: [client_id], onDelete: Cascade)
+  User                  User?                   @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  OAuthAccessTokenScope OAuthAccessTokenScope[]
+  OAuthDeviceRequest    OAuthDeviceRequest[]
+}
+
+model OAuthAccessTokenScope {
+  id               Int               @id @default(autoincrement())
+  scope            String?
+  accessToken_ID   Int?
+  OAuthAccessToken OAuthAccessToken? @relation(fields: [accessToken_ID], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  OAuthScope       OAuthScope?       @relation(fields: [scope], references: [scope], onDelete: Cascade)
+}
+
+model OAuthApp {
+  id                     Int                      @id(map: "OauthApp_pkey") @default(autoincrement())
+  client_id              String                   @unique(map: "OauthApp_client_id_key")
+  client_secret          String
+  app_name               String
+  app_icon_url           String?
+  app_homepage_url       String?
+  app_description        String?
+  OAuthAccessToken       OAuthAccessToken[]
+  OAuthAuthorizationCode OAuthAuthorizationCode[]
+  OAuthCallbackURL       OAuthCallbackURL[]
+  OAuthDeviceRequest     OAuthDeviceRequest[]
+}
+
+model OAuthAuthorizationCode {
+  id                      Int                       @id @default(autoincrement())
+  code                    String                    @unique
+  user_id                 Int?
+  client_id               String?
+  OAuthApp                OAuthApp?                 @relation(fields: [client_id], references: [client_id], onDelete: Cascade)
+  User                    User?                     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
+  OAuthAuthorizationScope OAuthAuthorizationScope[]
+}
+
+model OAuthAuthorizationScope {
+  id                     Int                     @id(map: "OAuthAuthorizationScopes_pkey") @default(autoincrement())
+  scope                  String?
+  authorizationScope_id  Int?
+  OAuthAuthorizationCode OAuthAuthorizationCode? @relation(fields: [authorizationScope_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "OAuthAuthorizationScopes_authorizationScope_id_fkey")
+  OAuthScope             OAuthScope?             @relation(fields: [scope], references: [scope], onDelete: Cascade, map: "OAuthAuthorizationScopes_scope_fkey")
+}
+
+model OAuthCallbackURL {
+  id           Int       @id(map: "OauthCallbackURL_pkey") @default(autoincrement())
+  callback_url String
+  oauthAppId   Int?
+  OAuthApp     OAuthApp? @relation(fields: [oauthAppId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "OauthCallbackURL_oauthAppId_fkey")
+}
+
+model OAuthDeviceRequest {
+  id                      Int                       @id @default(autoincrement())
+  device_code             String
+  user_code               String
+  expires_at              DateTime                  @db.Timestamp(6)
+  client_id               String?
+  access_token            String?
+  OAuthAccessToken        OAuthAccessToken?         @relation(fields: [access_token], references: [access_token], onUpdate: NoAction)
+  OAuthApp                OAuthApp?                 @relation(fields: [client_id], references: [client_id], onDelete: Cascade)
+  OAuthDeviceRequestScope OAuthDeviceRequestScope[]
+}
+
+model OAuthDeviceRequestScope {
+  id                 Int                 @id @default(autoincrement())
+  scope              String?
+  deviceRequest_id   Int?
+  OAuthDeviceRequest OAuthDeviceRequest? @relation(fields: [deviceRequest_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  OAuthScope         OAuthScope?         @relation(fields: [scope], references: [scope], onDelete: Cascade)
+}
+
+model OAuthScope {
+  id                      Int                       @id(map: "OAuthScopes_pkey") @default(autoincrement())
+  scope                   String                    @unique(map: "OAuthScopes_scope_key")
+  description             String
+  OAuthAccessTokenScope   OAuthAccessTokenScope[]
+  OAuthAuthorizationScope OAuthAuthorizationScope[]
+  OAuthDeviceRequestScope OAuthDeviceRequestScope[]
+}
+
+model Post {
+  post_id                   Int                         @id @default(autoincrement())
+  user_id                   Int
+  publishDate               DateTime?                   @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  featuredImageUrl          String?
+  body                      String?
+  title                     String
+  slug                      String                      @unique
+  published                 Boolean?                    @default(false)
+  excerpt                   String?
+  newsletterDate            DateTime?                   @db.Timestamp(6)
+  newsletterSent            Boolean                     @default(false)
+  User                      User                        @relation(fields: [user_id], references: [user_id], onDelete: SetNull, map: "Post_user_id")
+  NewsletterSubscriberSends NewsletterSubscriberSends[]
+  PostSubscriberTag         PostSubscriberTag[]
+  PostTag                   PostTag[]
+  SubscriberEmailOpen       SubscriberEmailOpen[]
+}
+
+model PostSubscriberTag {
+  post_subscriber_tag_id Int            @id @default(autoincrement())
+  post_id                Int?
+  subscriber_tag_id      Int?
+  Post                   Post?          @relation(fields: [post_id], references: [post_id], onDelete: Cascade, onUpdate: NoAction)
+  SubscriberTag          SubscriberTag? @relation(fields: [subscriber_tag_id], references: [subscriberTag_id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model PostTag {
+  post_tag_id Int   @id @default(autoincrement())
+  post_id     Int?
+  tag_id      Int?
+  Post        Post? @relation(fields: [post_id], references: [post_id], onDelete: Cascade, onUpdate: NoAction, map: "Post_tag_post_id")
+  Tag         Tag?  @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade, onUpdate: NoAction, map: "Post_tag_tag_id")
+}
+
+model Role {
+  role_id  Int        @id @default(autoincrement())
+  name     String?
+  UserRole UserRole[]
+}
+
+model Subscriber {
+  subscriber_id             Int                         @id @default(autoincrement())
+  email                     String                      @unique
+  firstName                 String?
+  status                    String                      @default("pending")
+  created_at                DateTime                    @default(now()) @db.Timestamp(6)
+  NewsletterSubscriberSends NewsletterSubscriberSends[]
+  SubscriberEmailOpen       SubscriberEmailOpen[]
+  SubscriberTagLookup       SubscriberTagLookup[]
+}
+
+model SubscriberEmailOpen {
+  subscriber_email_open_id Int         @id @default(autoincrement())
+  subscriber_id            Int?
+  opened_at                DateTime    @default(now()) @db.Timestamp(6)
+  broadcast_id             Int?
+  Post                     Post?       @relation(fields: [broadcast_id], references: [post_id], onDelete: Cascade, onUpdate: NoAction)
+  Subscriber               Subscriber? @relation(fields: [subscriber_id], references: [subscriber_id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model SubscriberTag {
+  subscriberTag_id    Int                   @id @default(autoincrement())
+  tag                 String                @unique
+  PostSubscriberTag   PostSubscriberTag[]
+  SubscriberTagLookup SubscriberTagLookup[]
+}
+
+model SubscriberTagLookup {
+  subscriber_tag_lookup_id Int            @id @default(autoincrement())
+  subscriber_id            Int?
+  subscriber_tag_id        Int?
+  createdAt                DateTime?      @default(now()) @db.Date
+  Subscriber               Subscriber?    @relation(fields: [subscriber_id], references: [subscriber_id], onDelete: Cascade, onUpdate: NoAction)
+  SubscriberTag            SubscriberTag? @relation(fields: [subscriber_tag_id], references: [subscriberTag_id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Tag {
+  tag_id  Int       @id @default(autoincrement())
+  tag     String?   @unique
+  PostTag PostTag[]
+}
+
+model UserRole {
+  userRole_id Int   @id @default(autoincrement())
+  user_id     Int?
+  role_id     Int?
+  Role        Role? @relation(fields: [role_id], references: [role_id], onDelete: Cascade, onUpdate: NoAction, map: "UserRole_role_id")
+  User        User? @relation(fields: [user_id], references: [user_id], onDelete: Cascade, map: "UserRole_User_id")
+}
