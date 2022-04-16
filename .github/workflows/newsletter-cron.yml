@@ -1,0 +1,16 @@
+name: Newsletter Cron
+
+on:
+  schedule:
+    - cron: "7,37 * * * *"
+jobs:
+  build:
+    name: Newsletter Cron
+    runs-on: ubuntu-latest
+    steps:
+      - name: Webhook HTTP Request
+        uses: fjogeleit/http-request-action@master
+        with:
+          url: ${{ secrets.WEBHOOK_URL }}
+          method: "POST"
+          bearerToken: ${{ secrets.WEBHOOK_SECRET }}
