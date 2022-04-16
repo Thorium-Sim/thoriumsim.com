@@ -15,7 +15,7 @@
     "format": "prettier --write .",
     "generate:css": "tailwindcss -i ./app/tailwind/tailwind.css -o ./app/styles/tailwind.css",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
-    "start": "cross-env NODE_ENV=production node ./build/index.js",
+    "start": "remix-serve build",
     "validate": "run-p lint typecheck"
   },
   "prettier": {},
