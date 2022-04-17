@@ -1,4 +1,8 @@
-import { json, LoaderFunction } from "@remix-run/server-runtime";
+import {
+  ActionFunction,
+  json,
+  LoaderFunction,
+} from "@remix-run/server-runtime";
 import { db } from "~/helpers/prisma.server";
 import { validateToken } from "~/validateToken";
 
@@ -18,15 +22,13 @@ export const loader: LoaderFunction = async ({ request }) => {
       },
     });
 
-    return json(
-      {
-        coreLayouts,
-      },
-      {
-        headers,
-      }
-    );
+    return json({ coreLayouts }, { headers });
   }
+
+  return json({}, { headers });
+};
+
+export const action: ActionFunction = async ({ request }) => {
   if (request.method === "POST") {
     const { user_id } = await validateToken(request, []);
     const body = await request.json();
@@ -38,12 +40,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       },
     });
 
-    return json(
-      { coreLayout: record },
-      {
-        headers,
-      }
-    );
+    return json({ coreLayout: record }, { headers });
   }
   if (request.method === "PUT") {
     const { user_id } = await validateToken(request, []);
@@ -59,12 +56,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       },
     });
 
-    return json(
-      { coreLayout: record },
-      {
-        headers,
-      }
-    );
+    return json({ coreLayout: record }, { headers });
   }
   if (request.method === "DELETE") {
     await validateToken(request, []);
@@ -79,18 +71,8 @@ export const loader: LoaderFunction = async ({ request }) => {
       },
     });
 
-    return json(
-      { coreLayout: record },
-      {
-        headers,
-      }
-    );
+    return json({ coreLayout: record }, { headers });
   }
 
-  return json(
-    {},
-    {
-      headers,
-    }
-  );
+  return json({}, { headers });
 };
