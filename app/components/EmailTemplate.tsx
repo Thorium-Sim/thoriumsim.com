@@ -1,11 +1,11 @@
-import {Fragment} from "react";
-import {renderToStaticMarkup} from "react-dom/server";
-import {processMarkdown} from "~/helpers/processMarkdown";
+import { Fragment } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { processMarkdown } from "~/helpers/processMarkdown";
 
 const components = {
-  ul: ({children}: any) => <Fragment children={children} />,
-  ol: ({children}: any) => <Fragment children={children} />,
-  li: ({children, ...props}: any) => (
+  ul: ({ children }: any) => <Fragment children={children} />,
+  ol: ({ children }: any) => <Fragment children={children} />,
+  li: ({ children, ...props }: any) => (
     <Fragment>
       &bull; {children} <br />
     </Fragment>
@@ -91,7 +91,9 @@ const components = {
       }}
     />
   ),
-  a: (props: any) => <a {...props} style={{color: "#0875c1"}} rel="nofollow" />,
+  a: (props: any) => (
+    <a {...props} style={{ color: "#0875c1" }} rel="nofollow" />
+  ),
   img: (props: any) => (
     <img
       {...props}
@@ -130,8 +132,8 @@ function EmailTemplate({
     >
       <tbody>
         <tr>
-          <td style={{verticalAlign: "top"}} />
-          <td style={{verticalAlign: "top"}}>
+          <td style={{ verticalAlign: "top" }} />
+          <td style={{ verticalAlign: "top" }}>
             <div
               style={{
                 margin: "0 auto",
@@ -159,12 +161,12 @@ function EmailTemplate({
                   }}
                 />
                 <div
-                  style={{padding: "20px"}}
+                  style={{ padding: "20px" }}
                   dangerouslySetInnerHTML={{
-                    __html: `${input}<img src="https://thoriumsim.com/email/trackingPixel?email=${email}&broadcastId=${broadcastId}"`,
+                    __html: `${input}<img src="https://thoriumsim.com/email/trackingPixel?email=${email}&broadcastId=${broadcastId}"/>`,
                   }}
                 ></div>
-                <div style={{padding: "0 20px 20px 20px"}}>
+                <div style={{ padding: "0 20px 20px 20px" }}>
                   <p
                     style={{
                       marginTop: 0,
@@ -179,23 +181,19 @@ function EmailTemplate({
                     ​
                     <a
                       href={`https://thoriumsim.com/email/unsubscribe?email=${email}`}
-                      style={{color: "#0875c1"}}
+                      style={{ color: "#0875c1" }}
                       rel="nofollow"
                     >
                       Unsubscribe
                     </a>{" "}
                     <br />
-                    50 W Broadway Ste 333
-                    <br />
-                    PMB 51647
-                    <br />
-                    Salt Lake City, Utah 84101
+                    960 Broadway, Chelsea, MA 02150
                   </p>
                 </div>
               </div>
             </div>
           </td>
-          <td style={{verticalAlign: "top"}} />
+          <td style={{ verticalAlign: "top" }} />
         </tr>
       </tbody>
     </table>
