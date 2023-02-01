@@ -1,37 +1,37 @@
 import { Form, useLoaderData, useTransition } from "@remix-run/react";
-import {FaSpinner} from "react-icons/fa";
+import { FaSpinner } from "react-icons/fa";
 
 const Newsletter = () => {
   const pendingForm = useTransition().submission;
   const routeData = useLoaderData();
   return (
-    <div className="w-full flex items-center justify-center">
+    <div className="flex w-full items-center justify-center">
       <Form
-        className="bg-gray-800 bg-opacity-20 backdrop-filter backdrop-blur-md p-8 max-w-3xl w-full shadow-lg overflow-hidden rounded-lg"
+        className="w-full max-w-3xl overflow-hidden rounded-lg bg-gray-800 bg-opacity-20 p-8 shadow-lg backdrop-blur-md backdrop-filter"
         action="/api/newsletter"
         method="post"
       >
-        <div className="minimal h-64 flex flex-col justify-center">
+        <div className="minimal flex h-64 flex-col justify-center">
           {routeData.newsletterSignup ? (
             <>
-              <h3 className="font-extrabold text-5xl text-center">
+              <h3 className="text-center text-5xl font-extrabold">
                 You've Signed Up!
               </h3>
-              <p className="text-xl text-center pt-8">
+              <p className="pt-8 text-center text-xl">
                 Now check your email to confirm your subscription.
               </p>
             </>
           ) : pendingForm ? (
             <>
-              <FaSpinner className="text-6xl mb-8 mx-auto  animate-spinner" />
-              <h3 className="font-extrabold text-5xl text-center">
+              <FaSpinner className="mx-auto mb-8 animate-spinner  text-6xl" />
+              <h3 className="text-center text-5xl font-extrabold">
                 Subscribing...
               </h3>
             </>
           ) : (
             <>
               <div data-element="header">
-                <h3 className="text-white text-4xl m-0 mb-8">
+                <h3 className="m-0 mb-8 text-4xl text-white">
                   Join the Newsletter
                 </h3>
               </div>
@@ -39,19 +39,28 @@ const Newsletter = () => {
                 Sign up to get regular updates, find ways to contribute, and get
                 access to exclusive content.
               </p>
-              <div className="flex flex-wrap sm:flex-nowrap mb-8">
-                <div className="flex-[2] mb-2 sm:mb-0 sm:mr-4">
+              <div className="mb-8 flex flex-wrap sm:flex-nowrap">
+                <div className="mb-2 flex-[2] sm:mb-0 sm:mr-4">
                   <input
                     name="email_address"
                     placeholder="Your email address"
                     required
                     type="email"
-                    className="bg-white bg-opacity-10 text-base p-3 border border-coolGray-500 w-full h-full min-w-[200px] transition-all duration-200 text-white focus:outline-none focus:ring ring-thorium-400"
+                    className="border-coolGray-500 h-full w-full min-w-[200px] border bg-white bg-opacity-10 p-3 text-base text-white ring-thorium-400 transition-all duration-200 focus:outline-none focus:ring"
                   />
                 </div>
+
                 <button className="thorium-button" data-element="submit">
                   Subscribe
                 </button>
+                <div className="h-0 w-0 overflow-hidden opacity-0">
+                  <input
+                    name="first_name"
+                    placeholder="Alex"
+                    type="text"
+                    className="border-coolGray-500 h-full w-full min-w-[200px] border bg-white bg-opacity-10 p-3 text-base text-white ring-thorium-400 transition-all duration-200 focus:outline-none focus:ring"
+                  />
+                </div>
               </div>
               <div className="text-center" data-element="guarantee">
                 We won't send you spam. Unsubscribe at any time.

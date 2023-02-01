@@ -7,7 +7,18 @@ import { commitSession, getSession } from "~/session.server";
 export let action: ActionFunction = async ({ request }) => {
   const body = new URLSearchParams(await request.text());
   const email = body.get("email_address");
+  const name = body.get("first_name");
   let session = await getSession(request);
+
+  // Basic bot protection
+  if (name) {
+    session.flash("error", "You shouldn't fill in that field. Are you a bot?");
+    return redirect("/", {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    });
+  }
   if (!email) {
     session.flash("error", "Invalid email address.");
   } else {
