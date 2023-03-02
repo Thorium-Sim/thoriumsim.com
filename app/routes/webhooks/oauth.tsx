@@ -133,27 +133,6 @@ export const loader: LoaderFunction = async ({ request }) => {
         }
         const { password, ...splitUser } = user;
 
-        // Invite the user to the Github org
-        await fetch(
-          `https://api.github.com/orgs/thorium-sim/memberships/${githubUser.login}`,
-          {
-            method: "PUT",
-            headers: {
-              Authorization: `token ${process.env.GITHUB_TOKEN}`,
-            },
-          }
-        ).then((res) => res.json());
-
-        // Star the Thorium Nova repo
-        await fetch(
-          `https://api.github.com/user/starred/thorium-sim/thorium-nova`,
-          {
-            method: "PUT",
-            headers: {
-              Authorization: `token ${accessRequest.access_token}`,
-            },
-          }
-        );
         session.flash("toast", "Github Connected");
         let oauthSession = await oauthStorage.getSession(
           request.headers.get("Cookie")

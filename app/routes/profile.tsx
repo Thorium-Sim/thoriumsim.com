@@ -85,7 +85,23 @@ export const loader: LoaderFunction = async ({ request }) => {
     },
   });
   const connectedProviders = connectedAccounts.map((account) => account.type);
-  return { ...uploadData, connectedProviders };
+
+  let starred = false;
+  const githubAccount = connectedAccounts.find((a) => a.type === "github");
+  if (githubAccount) {
+    const stars = await fetch(
+      "https://api.github.com/user/starred/thorium-sim/thorium-nova",
+      {
+        headers: {
+          Accept: "application/vnd.github+json",
+          Authorization: `Bearer ${githubAccount.access_token}`,
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+      }
+    );
+    starred = stars.status === 204;
+  }
+  return { ...uploadData, connectedProviders, starred };
 };
 
 export const action: ActionFunction = async ({ request }) => {
@@ -172,7 +188,9 @@ export const action: ActionFunction = async ({ request }) => {
   }
 };
 export default function Profile() {
-  const { uploadUrl, authorizationToken } = useLoaderData<ProfileData>();
+  const { uploadUrl, authorizationToken, connectedProviders } =
+    useLoaderData<ProfileData>();
+
   const user = useUser();
   const [formPending, setFormPending] = useState(false);
   const pendingForm = useTransition().submission;
@@ -300,6 +318,25 @@ export default function Profile() {
           className="bg-[#5865F2] text-white hover:bg-[#8791f6]"
         />
       </div>
+      {/* {connectedProviders.includes("github") ? (
+        <>
+          <h3 className="mb-2 text-2xl font-extrabold">Github Actions</h3>
+          <div className="space-y-2">
+            <button
+              className="block rounded bg-thorium-500 py-2 px-4 font-bold text-white hover:bg-thorium-600 disabled:cursor-not-allowed disabled:bg-tgray-200"
+              disabled={formPending || !!pendingForm}
+            >
+              Star Thorium Nova Repo
+            </button>
+            <button
+              className="block rounded bg-thorium-500 py-2 px-4 font-bold text-white hover:bg-thorium-600 disabled:cursor-not-allowed disabled:bg-tgray-200"
+              disabled={formPending || !!pendingForm}
+            >
+              Request Thorium Org Invite
+            </button>
+          </div>
+        </>
+      ) : null} */}
       <div className="h-16" />
       <Form
         method="post"

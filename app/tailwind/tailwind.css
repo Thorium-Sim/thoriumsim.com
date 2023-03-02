@@ -87,10 +87,16 @@
   }
 }
 .thorium-button {
-  @apply cursor-pointer flex px-4 py-2 items-center gap-2 rounded font-bold text-base text-white bg-gradient-to-br from-cerise-500  to-thorium-700 hover:text-white ring-0 hover:ring ring-cerise-500 focus:ring focus:outline-none transition-all select-none;
+  @apply flex cursor-pointer select-none items-center gap-2 rounded bg-gradient-to-br from-cerise-500 to-thorium-700 px-4 py-2 text-base  font-bold text-white ring-0 ring-cerise-500 transition-all hover:text-white hover:ring focus:outline-none focus:ring;
 }
 .prose strong a {
   font-weight: 600;
+}
+.prose ul > li {
+  display: grid;
+  grid-template-columns: 1rem 1fr;
+  align-items: baseline;
+  gap: 0.5rem;
 }
 .prose ul > li::before {
   content: "";
@@ -102,6 +108,7 @@
   color: #c636bd;
   height: 1rem !important;
   width: 1rem !important;
+  aspect: 1 / 1;
   background: transparent !important;
 }
 @media (min-width: 1024px) {
