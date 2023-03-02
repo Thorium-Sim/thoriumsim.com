@@ -144,8 +144,8 @@ model Post {
   excerpt                   String?
   newsletterDate            DateTime?                   @db.Timestamp(6)
   newsletterSent            Boolean                     @default(false)
-  User                      User                        @relation(fields: [user_id], references: [user_id], onDelete: SetNull, map: "Post_user_id")
   NewsletterSubscriberSends NewsletterSubscriberSends[]
+  User                      User                        @relation(fields: [user_id], references: [user_id], onDelete: SetNull, map: "Post_user_id")
   PostSubscriberTag         PostSubscriberTag[]
   PostTag                   PostTag[]
   SubscriberEmailOpen       SubscriberEmailOpen[]
@@ -219,8 +219,8 @@ model UserRole {
   userRole_id Int   @id @default(autoincrement())
   user_id     Int?
   role_id     Int?
-  Role        Role? @relation(fields: [role_id], references: [role_id], onDelete: Cascade, onUpdate: NoAction, map: "UserRole_role_id")
   User        User? @relation(fields: [user_id], references: [user_id], onDelete: Cascade, map: "UserRole_User_id")
+  Role        Role? @relation(fields: [role_id], references: [role_id], onDelete: Cascade, onUpdate: NoAction, map: "UserRole_role_id")
 }
 
 model CoreLayout {
