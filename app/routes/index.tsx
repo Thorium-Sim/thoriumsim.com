@@ -52,7 +52,7 @@ export default function LayoutRoute() {
         </div>
       </div>
       <div className=" z-10 mt-32 flex w-full flex-col items-center justify-center gap-8 text-center">
-        <img src={logo} className="z-10 max-w-[50%] sm:max-w-xs"></img>
+        <img src={logo} alt="" className="z-10 max-w-[50%] sm:max-w-xs"></img>
         <h1 className="z-10 m-0 text-6xl font-extrabold">Thorium Nova</h1>
         <h2 className="z-10 m-0 text-4xl font-extrabold">
           The Future of Bridge Simulation
