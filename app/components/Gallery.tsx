@@ -7,7 +7,7 @@ import universe from "../images/index/screenshots/universe.jpeg";
 
 export default function Gallery() {
   return (
-    <div className="full-width relative grid grid-cols-1 gap-4 px-8 sm:grid-cols-2 md:px-16 lg:grid-cols-3">
+    <div className="full-width relative grid grid-cols-1 gap-x-4 gap-y-20 px-8 sm:grid-cols-2 md:px-16 lg:grid-cols-3">
       <GalleryImage
         src={main}
         alt="The main screen of Thorium Nova, where you'll start your flight."
