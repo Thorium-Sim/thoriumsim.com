@@ -95,28 +95,34 @@ export const action: ActionFunction = async ({ request }) => {
       user_id: userData.user_id,
     };
 
-    const subscriberTagUpdate = {
-      createMany: {
-        skipDuplicates: true,
-        data: body.getAll("subscriberTag[]").map((subscriber_tag_id) => ({
-          subscriber_tag_id: Number(subscriber_tag_id),
-        })),
-      },
-    };
-    const post = await db.post.upsert({
-      create: { ...postData, PostSubscriberTag: subscriberTagUpdate },
-      update: {
-        ...postData,
-        PostSubscriberTag: {
-          deleteMany: {},
-          ...subscriberTagUpdate,
+    const subscriberTagUpdate = body
+      .getAll("subscriberTag[]")
+      .map((subscriber_tag_id) => Number(subscriber_tag_id));
+
+    await db.$transaction([
+      db.post.upsert({
+        create: { ...postData },
+        update: {
+          ...postData,
+          PostSubscriberTag: {
+            deleteMany: {},
+            ...subscriberTagUpdate,
+          },
         },
-      },
-      where: { post_id: Number(body.get("post_id")) },
-      include: {
-        PostSubscriberTag: true,
-      },
-    });
+        where: { post_id: Number(body.get("post_id")) },
+        include: {
+          PostSubscriberTag: true,
+        },
+      }),
+      ...subscriberTagUpdate.map((subscriber_tag_id) =>
+        db.postSubscriberTag.create({
+          data: {
+            post_id: Number(body.get("post_id")),
+            subscriber_tag_id,
+          },
+        })
+      ),
+    ]);
     session.flash("toast", "Post updated!");
   }
   return redirect("/admin/blog", {

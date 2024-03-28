@@ -83,12 +83,16 @@ export const action: ActionFunction = async ({ request }) => {
             }
           }
         }
-        await db.newsletterSubscriberSends.createMany({
-          data: sentEmail.map((email) => ({
-            subscriber_email: email,
-            post_id: post.post_id,
-          })),
-        });
+        await db.$transaction(
+          sentEmail.map((email) =>
+            db.newsletterSubscriberSends.create({
+              data: {
+                subscriber_email: email,
+                post_id: post.post_id,
+              },
+            })
+          )
+        );
       })
     );
     const rejected = result.filter((r) => r.status === "rejected");

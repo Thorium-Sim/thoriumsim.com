@@ -78,28 +78,33 @@ export const action: ActionFunction = async ({ request }) => {
       };
     const access_token = generateAccessToken();
     // Update the database - the device will poll to know if it has access
-    await db.oAuthAccessToken.create({
-      data: {
-        user_id: user?.user_id,
-        access_token,
-        client_id: deviceRequest.client_id,
-        OAuthAccessTokenScope: {
-          createMany: {
-            data: deviceRequest.OAuthDeviceRequestScope.map((scope) => ({
-              scope: scope.scope,
-            })),
-          },
+    const [accessToken] = await db.$transaction([
+      db.oAuthAccessToken.create({
+        data: {
+          user_id: user?.user_id,
+          access_token,
+          client_id: deviceRequest.client_id,
         },
-      },
-    });
-    await db.oAuthDeviceRequest.update({
-      data: {
-        access_token,
-      },
-      where: {
-        id: deviceRequest.id,
-      },
-    });
+      }),
+      db.oAuthDeviceRequest.update({
+        data: {
+          access_token,
+        },
+        where: {
+          id: deviceRequest.id,
+        },
+      }),
+    ]);
+    await db.$transaction([
+      ...deviceRequest.OAuthDeviceRequestScope.map((scope) =>
+        db.oAuthAccessTokenScope.create({
+          data: {
+            accessToken_ID: accessToken.id,
+            scope: scope.scope,
+          },
+        })
+      ),
+    ]);
     // Return a response saying we're done.
     return {
       done: true,

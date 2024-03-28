@@ -92,15 +92,15 @@ export const action: ActionFunction = async ({ request }) => {
       device_code,
       user_code,
       expires_at: new Date(Date.now() + expires_in * 1000),
-      OAuthDeviceRequestScope: {
-        createMany: {
-          data: scopesList.map((s) => ({
-            scope: s,
-          })),
-        },
-      },
     },
   });
+  await db.$transaction([
+    ...scopesList.map((s) =>
+      db.oAuthDeviceRequestScope.create({
+        data: { scope: s, deviceRequest_id: deviceRequest.id },
+      })
+    ),
+  ]);
   return json(
     {
       device_code,
