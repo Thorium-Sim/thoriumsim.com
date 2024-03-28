@@ -31,7 +31,6 @@ COPY --from=build /app/build build
 COPY --from=build /app/public public
 COPY other/start.sh .
 COPY other/litestream.sh .
-COPY migrate.ts .
 COPY prisma/migrations prisma/migrations
 COPY prisma/schema.prisma prisma/
 RUN npx prisma generate --schema prisma/schema.prisma
