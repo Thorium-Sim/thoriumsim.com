@@ -3,19 +3,19 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./data.db"
 }
 
 model User {
-  user_id                Int                      @id(map: "users_pkey") @default(autoincrement())
+  user_id                Int                      @id @default(autoincrement())
   email                  String                   @unique(map: "users_email_key")
   password               String
   profilePictureUrl      String?
   displayName            String?
   bio                    String?
   passwordResetToken     String?
-  passwordResetExpire    DateTime?                @db.Timestamp(6)
+  passwordResetExpire    DateTime?
   ConnectedAccount       ConnectedAccount[]
   CoreLayout             CoreLayout[]
   OAuthAccessToken       OAuthAccessToken[]
@@ -30,8 +30,8 @@ model ConnectedAccount {
   type                String
   access_token        String?
   refresh_token       String?
-  createdAt           DateTime? @db.Timestamp(6)
-  expiresAt           DateTime? @db.Timestamp(6)
+  createdAt           DateTime?
+  expiresAt           DateTime?
   account_id          String?
   User                User?     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
 }
@@ -40,9 +40,9 @@ model NewsletterSubscriberSends {
   id               Int         @id @default(autoincrement())
   subscriber_email String?
   post_id          Int?
-  createdAt        DateTime    @default(now()) @db.Date
+  createdAt        DateTime    @default(now())
   Post             Post?       @relation(fields: [post_id], references: [post_id], onDelete: Cascade, onUpdate: NoAction)
-  Subscriber       Subscriber? @relation(fields: [subscriber_email], references: [email], onDelete: Cascade, map: "NewsletterSubscriberSends_subscriber_id_fkey")
+  Subscriber       Subscriber? @relation(fields: [subscriber_email], references: [email], onDelete: Cascade)
 }
 
 model OAuthAccessToken {
@@ -65,7 +65,7 @@ model OAuthAccessTokenScope {
 }
 
 model OAuthApp {
-  id                     Int                      @id(map: "OauthApp_pkey") @default(autoincrement())
+  id                     Int                      @id @default(autoincrement())
   client_id              String                   @unique(map: "OauthApp_client_id_key")
   client_secret          String
   app_name               String
@@ -89,25 +89,25 @@ model OAuthAuthorizationCode {
 }
 
 model OAuthAuthorizationScope {
-  id                     Int                     @id(map: "OAuthAuthorizationScopes_pkey") @default(autoincrement())
+  id                     Int                     @id @default(autoincrement())
   scope                  String?
   authorizationScope_id  Int?
-  OAuthAuthorizationCode OAuthAuthorizationCode? @relation(fields: [authorizationScope_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "OAuthAuthorizationScopes_authorizationScope_id_fkey")
-  OAuthScope             OAuthScope?             @relation(fields: [scope], references: [scope], onDelete: Cascade, map: "OAuthAuthorizationScopes_scope_fkey")
+  OAuthAuthorizationCode OAuthAuthorizationCode? @relation(fields: [authorizationScope_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  OAuthScope             OAuthScope?             @relation(fields: [scope], references: [scope], onDelete: Cascade)
 }
 
 model OAuthCallbackURL {
-  id           Int       @id(map: "OauthCallbackURL_pkey") @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   callback_url String
   oauthAppId   Int?
-  OAuthApp     OAuthApp? @relation(fields: [oauthAppId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "OauthCallbackURL_oauthAppId_fkey")
+  OAuthApp     OAuthApp? @relation(fields: [oauthAppId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model OAuthDeviceRequest {
   id                      Int                       @id @default(autoincrement())
   device_code             String
   user_code               String
-  expires_at              DateTime                  @db.Timestamp(6)
+  expires_at              DateTime
   client_id               String?
   access_token            String?
   OAuthAccessToken        OAuthAccessToken?         @relation(fields: [access_token], references: [access_token], onUpdate: NoAction)
@@ -124,7 +124,7 @@ model OAuthDeviceRequestScope {
 }
 
 model OAuthScope {
-  id                      Int                       @id(map: "OAuthScopes_pkey") @default(autoincrement())
+  id                      Int                       @id @default(autoincrement())
   scope                   String                    @unique(map: "OAuthScopes_scope_key")
   description             String
   OAuthAccessTokenScope   OAuthAccessTokenScope[]
@@ -135,17 +135,17 @@ model OAuthScope {
 model Post {
   post_id                   Int                         @id @default(autoincrement())
   user_id                   Int
-  publishDate               DateTime?                   @default(dbgenerated("CURRENT_DATE")) @db.Timestamp(6)
+  publishDate               DateTime?                   @default(dbgenerated("CURRENT_DATE"))
   featuredImageUrl          String?
   body                      String?
   title                     String
   slug                      String                      @unique
   published                 Boolean?                    @default(false)
   excerpt                   String?
-  newsletterDate            DateTime?                   @db.Timestamp(6)
+  newsletterDate            DateTime?
   newsletterSent            Boolean                     @default(false)
   NewsletterSubscriberSends NewsletterSubscriberSends[]
-  User                      User                        @relation(fields: [user_id], references: [user_id], onDelete: SetNull, map: "Post_user_id")
+  User                      User                        @relation(fields: [user_id], references: [user_id], onDelete: NoAction)
   PostSubscriberTag         PostSubscriberTag[]
   PostTag                   PostTag[]
   SubscriberEmailOpen       SubscriberEmailOpen[]
@@ -163,8 +163,8 @@ model PostTag {
   post_tag_id Int   @id @default(autoincrement())
   post_id     Int?
   tag_id      Int?
-  Post        Post? @relation(fields: [post_id], references: [post_id], onDelete: Cascade, onUpdate: NoAction, map: "Post_tag_post_id")
-  Tag         Tag?  @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade, onUpdate: NoAction, map: "Post_tag_tag_id")
+  Post        Post? @relation(fields: [post_id], references: [post_id], onDelete: Cascade, onUpdate: NoAction)
+  Tag         Tag?  @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model Role {
@@ -178,7 +178,7 @@ model Subscriber {
   email                     String                      @unique
   firstName                 String?
   status                    String                      @default("pending")
-  created_at                DateTime                    @default(now()) @db.Timestamp(6)
+  created_at                DateTime                    @default(now())
   NewsletterSubscriberSends NewsletterSubscriberSends[]
   SubscriberEmailOpen       SubscriberEmailOpen[]
   SubscriberTagLookup       SubscriberTagLookup[]
@@ -187,7 +187,7 @@ model Subscriber {
 model SubscriberEmailOpen {
   subscriber_email_open_id Int         @id @default(autoincrement())
   subscriber_id            Int?
-  opened_at                DateTime    @default(now()) @db.Timestamp(6)
+  opened_at                DateTime    @default(now())
   broadcast_id             Int?
   Post                     Post?       @relation(fields: [broadcast_id], references: [post_id], onDelete: Cascade, onUpdate: NoAction)
   Subscriber               Subscriber? @relation(fields: [subscriber_id], references: [subscriber_id], onDelete: Cascade, onUpdate: NoAction)
@@ -204,7 +204,7 @@ model SubscriberTagLookup {
   subscriber_tag_lookup_id Int            @id @default(autoincrement())
   subscriber_id            Int?
   subscriber_tag_id        Int?
-  createdAt                DateTime?      @default(now()) @db.Date
+  createdAt                DateTime?      @default(now())
   Subscriber               Subscriber?    @relation(fields: [subscriber_id], references: [subscriber_id], onDelete: Cascade, onUpdate: NoAction)
   SubscriberTag            SubscriberTag? @relation(fields: [subscriber_tag_id], references: [subscriberTag_id], onDelete: Cascade, onUpdate: NoAction)
 }
@@ -219,15 +219,15 @@ model UserRole {
   userRole_id Int   @id @default(autoincrement())
   user_id     Int?
   role_id     Int?
-  User        User? @relation(fields: [user_id], references: [user_id], onDelete: Cascade, map: "UserRole_User_id")
-  Role        Role? @relation(fields: [role_id], references: [role_id], onDelete: Cascade, onUpdate: NoAction, map: "UserRole_role_id")
+  User        User? @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  Role        Role? @relation(fields: [role_id], references: [role_id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model CoreLayout {
-  id          Int      @id(map: "CoreLayouts_pkey") @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   user_id     Int?
   name        String?
   layout_json String?  @default("{\"global\":{\"splitterSize\":1,\"splitterExtra\":4,\"tabEnableFloat\":true,\"tabSetEnableClose\":true,\"tabSetMinWidth\":100,\"tabSetMinHeight\":100,\"borderMinSize\":100,\"borderEnableAutoHide\":true,\"enableEdgeDock\":true},\"borders\":[{\"type\":\"border\",\"location\":\"bottom\",\"children\":[]},{\"type\":\"border\",\"location\":\"left\",\"children\":[]},{\"type\":\"border\",\"location\":\"right\",\"children\":[]}],\"layout\":{\"type\":\"row\",\"children\":[]}}")
   deleted     Boolean? @default(false)
-  User        User?    @relation(fields: [user_id], references: [user_id], onDelete: Cascade, map: "CoreLayouts_user_id_fkey")
+  User        User?    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 }

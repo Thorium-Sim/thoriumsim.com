@@ -33,10 +33,8 @@ COPY other/start.sh .
 COPY other/litestream.sh .
 COPY migrate.ts .
 COPY prisma/migrations prisma/migrations
-COPY prisma/newschema.prisma prisma/
 COPY prisma/schema.prisma prisma/
 RUN npx prisma generate --schema prisma/schema.prisma
-RUN npx prisma generate --schema prisma/newschema.prisma
 RUN chmod +x start.sh
 RUN chmod +x litestream.sh
 
