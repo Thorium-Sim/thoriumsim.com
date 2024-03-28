@@ -1,0 +1,11 @@
+access-key-id: $B2_KEY_ID
+secret-access-key: $B2_KEY_SECRET
+
+dbs:
+  - path: /app/prisma/data.db
+    replicas:
+      - type: s3
+        bucket: thorium-private
+        path: db # change to whatever path you want
+        endpoint: s3.us-west-000.backblazeb2.com # change this
+        force-path-style: true

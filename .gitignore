@@ -9,3 +9,5 @@ node_modules
 /app/styles/tailwind.css
 
 .DS_Store
+prisma/data.db*
+prisma/new-client
