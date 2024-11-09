@@ -2,7 +2,7 @@ name: Newsletter Cron
 
 on:
   schedule:
-    - cron: "7,37 * * * *"
+    - cron: "7 12 * * 4"
 jobs:
   build:
     name: Newsletter Cron
