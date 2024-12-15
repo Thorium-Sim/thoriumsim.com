@@ -2,7 +2,7 @@ import { useUser } from "~/context/user";
 import { Logo } from "./Logo";
 import { Menu, Transition } from "@headlessui/react";
 import { FaUser } from "react-icons/fa";
-import { FC } from "react";
+import type { FC } from "react";
 import { Link } from "@remix-run/react";
 
 const MenuItem: FC<{ to?: string; href?: string; disabled?: boolean }> = ({
@@ -73,9 +73,9 @@ export default function Header({ className }: { className?: string }) {
                 >
                   <Menu.Items
                     static
-                    className="mt-2 w-56 origin-top-right divide-y divide-tgray-100 rounded-md border border-tgray-200 bg-tgray-600 shadow-lg outline-none"
+                    className="mt-2 w-fit origin-top-right divide-y divide-tgray-100 rounded-md border border-tgray-200 bg-tgray-600 shadow-lg outline-none"
                   >
-                    <div className="px-4 py-3">
+                    <div className="flex flex-col px-4 py-3">
                       <span className="text-sm leading-5">Signed in as </span>
                       <span className="truncate text-sm font-medium leading-5 text-cerise-300">
                         {user.email}
