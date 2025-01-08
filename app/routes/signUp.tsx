@@ -3,8 +3,8 @@ import { FaSpinner } from "react-icons/fa";
 import { Input } from "~/components/Input";
 import { validateCredentials } from "~/helpers/validateCredentials";
 import {
-  ActionFunction,
-  LoaderFunction,
+  type ActionFunction,
+  type LoaderFunction,
   redirect,
 } from "@remix-run/server-runtime";
 import { json } from "remix-utils";
@@ -16,15 +16,15 @@ interface SignUpSubmitResults {
   displayName?: string;
 }
 
-export let loader: LoaderFunction = async ({ request }) => {
-  let session = await getSession(request);
+export const loader: LoaderFunction = async ({ request }) => {
+  const session = await getSession(request);
 
   if (session.has("user")) {
     // Redirect to the home page if they are already signed in.
     return redirect("/");
   }
 
-  let data = {
+  const data = {
     error: session.get("error"),
     email: session.get("email"),
     displayName: session.get("displayName"),
@@ -37,9 +37,9 @@ export let loader: LoaderFunction = async ({ request }) => {
   });
 };
 
-export let action: ActionFunction = async ({ request }) => {
-  let session = await getSession(request);
-  let bodyParams = new URLSearchParams(await request.text());
+export const action: ActionFunction = async ({ request }) => {
+  const session = await getSession(request);
+  const bodyParams = new URLSearchParams(await request.text());
   const email = bodyParams.get("email");
   const displayName = bodyParams.get("displayName");
   try {
@@ -74,8 +74,8 @@ export let action: ActionFunction = async ({ request }) => {
 };
 
 export default function SignUp() {
-  let { error, email, displayName } = useLoaderData<SignUpSubmitResults>();
-  let pendingForm = useTransition().submission;
+  const { error, email, displayName } = useLoaderData<SignUpSubmitResults>();
+  const pendingForm = useTransition().submission;
   return (
     <div className="mt-32 flex min-h-full w-full flex-col items-center justify-center">
       <div className="w-full max-w-xl flex-1 px-4">
@@ -86,7 +86,7 @@ export default function SignUp() {
           className="mb-16 flex flex-col rounded bg-tgray-500 bg-opacity-50 px-8 pt-6 pb-8 shadow-md"
           method="post"
         >
-          <Input
+        {/**  <Input
             label="Display Name"
             type="text"
             name="displayName"
@@ -119,6 +119,8 @@ export default function SignUp() {
               {pendingForm ? <FaSpinner className="animate-spin" /> : "Sign In"}
             </button>
           </div>
+           */}
+           <p>Email address signup is disabled.</p>
           <hr className="mx-auto my-8 w-1/2" />
           <p className="text-center">
             Have an account?{" "}
