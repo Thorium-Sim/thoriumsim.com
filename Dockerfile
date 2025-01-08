@@ -1,4 +1,4 @@
-FROM node:18-alpine as build
+FROM node:18-alpine AS build
 
 WORKDIR /app
 
@@ -14,9 +14,12 @@ COPY tailwind.config.js remix.config.js .
 
 RUN npm run build
 
-FROM node:18-alpine as runner
+FROM node:18-alpine AS runner
 
-RUN apk add bash
+RUN apk update \
+	&& apk add --no-cache openssl bash\
+	&& rm -rf /var/lib/apt/lists/* \
+	&& rm -rf /var/cache/apk/*
 
 COPY --from=litestream/litestream /usr/local/bin/litestream /usr/local/bin/litestream
 COPY litestream.yml /etc/litestream.yml
@@ -39,6 +42,5 @@ RUN chmod +x litestream.sh
 
 EXPOSE 3000
 
-CMD litestream restore /app/prisma/data.db && litestream replicate -exec "./start.sh"
 CMD ./litestream.sh
 
