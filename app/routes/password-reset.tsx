@@ -93,8 +93,9 @@ export default function PasswordReset() {
               disabled={!!pendingForm}
             >
               {pendingForm ? <FaSpinner className="animate-spin" /> : "Sign In"}
-            </button> */}
+            </button>
           </div>
+             */}
           <hr className="mx-auto my-8 w-1/2" />
           <p className="text-center">
             Jogged your memory?{" "}
