@@ -37,7 +37,7 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  let session = await getSession(request);
+  const session = await getSession(request);
   const toast = session.get("toast");
   const error = session.get("error");
   return json<LoaderData>(
@@ -91,6 +91,13 @@ export default function App() {
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
+
+        <script
+        id="counterscale-script"
+        data-site-id="thoriumsim.com"
+        src="https://analytics.ralexanderson.com/tracker.js"
+        defer
+        ></script>
       </body>
     </html>
   );
