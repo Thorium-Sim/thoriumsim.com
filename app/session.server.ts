@@ -10,6 +10,7 @@ export const sessionStorage = createCookieSessionStorage({
     name: "__session",
     httpOnly: true,
     maxAge: 60 * 60 * 24 * 30,
+    domain: ".thoriumsim.com",
     path: "/",
     sameSite: "lax",
     secrets: [process.env.COOKIE_SECRET],
