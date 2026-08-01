@@ -1,0 +1,14 @@
+access-key-id: $CLOUDFLARE_ACCESS_KEY_ID
+secret-access-key: $CLOUDFLARE_SECRET_ACCESS_KEY
+
+snapshot:
+  retention: 72h
+
+dbs:
+  - path: ./app/db/data.db
+    replica:
+      type: s3
+      bucket: thorium-private
+      path: db # change to whatever path you want
+      endpoint: 532264959bf6572ae8a82ebfd3b65910.r2.cloudflarestorage.com # change this
+      force-path-style: true

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://remix.run/schemas/remix.json",
+  "db": {
+    "adapter": {
+      "type": "sqlite",
+      "filename": "./app/db/data.db"
+    },
+    "migrations": {
+      "directory": "./app/db/migrations",
+      "journalTable": "app_migrations"
+    }
+  }
+}

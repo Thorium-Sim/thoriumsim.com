@@ -1,0 +1,1 @@
+ALTER TABLE ConnectedAccount ADD COLUMN issuer TEXT;

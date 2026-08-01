@@ -1,0 +1,123 @@
+diff --git a/node_modules/@remix-run/auth/dist/lib/providers/atmosphere.d.ts b/node_modules/@remix-run/auth/dist/lib/providers/atmosphere.d.ts
+index 56d4cf4..ecda543 100644
+--- a/node_modules/@remix-run/auth/dist/lib/providers/atmosphere.d.ts
++++ b/node_modules/@remix-run/auth/dist/lib/providers/atmosphere.d.ts
+@@ -100,6 +100,10 @@ export interface AtmosphereAuthProvider<profile extends AtmosphereAuthProfile =
+      * Resolves a request-time handle or DID into a prepared provider for `startExternalAuth()`.
+      */
+     prepare(handleOrDid: string): Promise<OAuthProvider<profile, 'atmosphere', AtmosphereOAuthTokens>>;
++    /**
++     * Resolves a request-time PDS into a prepared provider for `startExternalAuth()`.
++     */
++    prepareCreateAccount(pdsUrl: string): Promise<OAuthProvider<profile, "atmosphere", AtmosphereOAuthTokens>>;
+ }
+ /**
+  * Options for creating an Atmosphere auth provider.
+diff --git a/node_modules/@remix-run/auth/dist/lib/providers/atmosphere.js b/node_modules/@remix-run/auth/dist/lib/providers/atmosphere.js
+index 44cf77f..b5341aa 100644
+--- a/node_modules/@remix-run/auth/dist/lib/providers/atmosphere.js
++++ b/node_modules/@remix-run/auth/dist/lib/providers/atmosphere.js
+@@ -71,12 +71,12 @@ export function createAtmosphereAuthProvider(options) {
+                 nonce: tokenResponse.nonce,
+             },
+         };
+-        if (tokenResponse.json.sub !== sessionState.did) {
++        if (sessionState.did && tokenResponse.json.sub !== sessionState.did) {
+             throw new Error('Atmosphere token response did not match the resolved account DID.');
+         }
+         let profile = await mapAtmosphereProfile(options, {
+             identifier: sessionState.identifier,
+-            did: sessionState.did,
++            did: sessionState.did || tokenResponse.json.sub,
+             handle: sessionState.handle,
+             pdsUrl: sessionState.pdsUrl,
+             authorizationServer,
+@@ -87,7 +87,7 @@ export function createAtmosphereAuthProvider(options) {
+             provider: ATMOSPHERE_PROVIDER_NAME,
+             account: {
+                 provider: ATMOSPHERE_PROVIDER_NAME,
+-                providerAccountId: sessionState.did,
++                providerAccountId: sessionState.did || tokenResponse.json.sub,
+             },
+             profile,
+             tokens,
+@@ -137,6 +137,7 @@ export function createAtmosphereAuthProvider(options) {
+         handleCallback,
+         refreshTokens,
+     });
++    let dpopKeyPair;
+     return Object.assign(provider, {
+         async prepare(handleOrDid) {
+             let identifier = normalizeAtmosphereIdentifier(handleOrDid);
+@@ -144,8 +145,8 @@ export function createAtmosphereAuthProvider(options) {
+             let authorizationServer = await discoverAuthorizationServer(identity.pdsUrl, options.clientAuthentication != null);
+             return createOAuthProvider(ATMOSPHERE_PROVIDER_NAME, {
+                 async createAuthorizationURL(transaction) {
++                    dpopKeyPair = dpopKeyPair || await generateDpopKeyPair();
+                     let challenge = await createCodeChallenge(transaction.codeVerifier);
+-                    let dpopKeyPair = await generateDpopKeyPair();
+                     let stateFile = {
+                         identifier: identifier.input,
+                         did: identity.did,
+@@ -197,6 +198,61 @@ export function createAtmosphereAuthProvider(options) {
+                 refreshTokens,
+             });
+         },
++        async prepareCreateAccount(pdsUrl) {
++            let authorizationServer = await discoverAuthorizationServer(pdsUrl, options.clientAuthentication != null);
++            return createOAuthProvider(ATMOSPHERE_PROVIDER_NAME, {
++                async createAuthorizationURL(transaction) {
++                    let challenge = await createCodeChallenge(transaction.codeVerifier);
++                    dpopKeyPair = dpopKeyPair || await generateDpopKeyPair();
++                    let stateFile = {
++                        pdsUrl,
++                        authorizationServer: {
++                            issuer: authorizationServer.issuer,
++                            tokenEndpoint: authorizationServer.token_endpoint,
++                        },
++                        publicJwk: dpopKeyPair.publicJwk,
++                        privateJwk: dpopKeyPair.privateJwk,
++                    };
++                    let params = new URLSearchParams();
++                    for (let [key, value] of Object.entries(options.authorizationParams ?? {})) {
++                        if (value != null) {
++                            params.set(key, value);
++                        }
++                    }
++                    params.set('client_id', client.clientId);
++                    params.set('redirect_uri', client.redirectUri);
++                    params.set('response_type', 'code');
++                    params.set('scope', scopes.join(' '));
++                    params.set('state', transaction.state);
++                    params.set('code_challenge', challenge);
++                    params.set('code_challenge_method', 'S256');
++                    params.set("prompt", "create");
++
++                    if (options.clientAuthentication != null) {
++                        params.set('client_assertion_type', 'urn:ietf:params:oauth:client-assertion-type:jwt-bearer');
++                        params.set('client_assertion', await createClientAssertion(client.clientId, authorizationServer.issuer, options.clientAuthentication));
++                    }
++                    let parResponse = await sendDpopFormRequest({
++                        endpoint: authorizationServer.pushed_authorization_request_endpoint,
++                        body: params,
++                        dpopKeyPair,
++                        fallbackError: 'Atmosphere pushed authorization request failed.',
++                    });
++                    if (typeof parResponse.json.request_uri !== 'string' ||
++                        parResponse.json.request_uri.length === 0) {
++                        throw new Error('Atmosphere PAR response did not include a request_uri.');
++                    }
++                    stateFile.authorizationServerNonce = parResponse.nonce;
++                    transaction.providerState = await writeAtmosphereSessionState(sessionSecret, transaction.state, stateFile);
++                    return createAuthorizationURL(authorizationServer.authorization_endpoint, {
++                        client_id: client.clientId,
++                        request_uri: parResponse.json.request_uri,
++                    });
++                },
++                handleCallback,
++                refreshTokens,
++            });
++        },
+     });
+ }
+ async function mapAtmosphereProfile(options, input) {
