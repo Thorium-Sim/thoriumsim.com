@@ -6,12 +6,15 @@ const Newsletter = () => {
   const routeData = useLoaderData();
   return (
     <div className="flex w-full items-center justify-center">
-      <Form
+      <div
         className="w-full max-w-3xl overflow-hidden rounded-lg bg-gray-800 bg-opacity-20 p-8 shadow-lg backdrop-blur-md backdrop-filter"
-        action="/api/newsletter"
-        method="post"
+        // action="/api/newsletter"
+        // method="post"
       >
-        <div className="minimal flex h-64 flex-col justify-center">
+         <h3 className="text-center text-5xl font-extrabold">
+Newsletter Signup has been deactivated
+              </h3>
+        {/* <div className="minimal flex h-64 flex-col justify-center">
           {routeData.newsletterSignup ? (
             <>
               <h3 className="text-center text-5xl font-extrabold">
@@ -67,8 +70,8 @@ const Newsletter = () => {
               </div>
             </>
           )}
-        </div>
-      </Form>
+        </div> */}
+      </div>
     </div>
   );
 };

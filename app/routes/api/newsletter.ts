@@ -9,7 +9,7 @@ export let action: ActionFunction = async ({ request }) => {
   const email = body.get("email_address");
   const name = body.get("first_name");
   let session = await getSession(request);
-
+  throw new Error('This endpoint has been disabled')
   // Basic bot protection
   if (name) {
     session.flash("error", "You shouldn't fill in that field. Are you a bot?");
