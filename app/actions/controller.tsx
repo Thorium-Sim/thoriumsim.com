@@ -1,16 +1,13 @@
 import { createController } from "remix/router";
 
-import { assetServer } from "../assets.ts";
 import { routes } from "../routes.ts";
 import { HomePage } from "../ui/pages/home-page.tsx";
 import { GalleryImage, GalleryPage } from "../ui/pages/gallery-page.tsx";
 import { AboutPage } from "../ui/pages/about-page.tsx";
-import { readFileSync } from "node:fs";
 import { createHtmlResponse } from "remix/response/html";
 import { BlogIndex } from "../ui/pages/blog-index-page.tsx";
-import { getPost, listPosts } from "../utils/r2.ts";
+import { getAboutContent, getPost, listPosts } from "../utils/r2.ts";
 import { BlogPostPage } from "../ui/pages/blog-post-page.tsx";
-import { processMarkdown } from "../utils/processMarkdown.ts";
 import { generateFeed } from "../utils/rss.ts";
 import { cachified } from "@epic-web/cachified";
 import { cache } from "../utils/cache.ts";
@@ -28,18 +25,6 @@ import {
 import { UnsubscribeConfirmationPage } from "../ui/pages/unsubscribe-confirmation-page.tsx";
 import { formData } from "remix/middleware/form-data";
 
-function getAboutContent() {
-  return cachified({
-    cache,
-    key: "about",
-    ttl: 60_000, // 1 minute
-    staleWhileRevalidate: 300_000, // 5 minutes
-    async getFreshValue() {
-      let aboutContent = readFileSync("./app/ui/pages/aboutContent.md", "utf-8");
-      return await processMarkdown(aboutContent);
-    },
-  });
-}
 function getRssContent() {
   return cachified({
     cache,
@@ -55,11 +40,6 @@ function getRssContent() {
 
 export default createController(routes, {
   actions: {
-    async assets(context) {
-      return (
-        (await assetServer.fetch(context.request)) ?? new Response("Not Found", { status: 404 })
-      );
-    },
     home(context) {
       return context.render(<HomePage />);
     },

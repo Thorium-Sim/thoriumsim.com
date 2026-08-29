@@ -85,6 +85,22 @@ export async function getPost(slug: string) {
   });
 }
 
+export function getAboutContent() {
+  return cachified({
+    cache,
+    key: "about",
+    ttl: 60_000, // 1 minute
+    staleWhileRevalidate: 300_000, // 5 minutes
+    async getFreshValue() {
+      const res = await client.fetch(`${ENDPOINT}/aboutContent.md`);
+      if (!res.ok) throw new Error(`About Content not found`);
+      const raw = await res.text();
+
+      return await processMarkdown(raw);
+    },
+  });
+}
+
 export async function getPostRaw(slug: string) {
   const res = await client.fetch(`${ENDPOINT}/posts/${slug}/post.md`);
   if (!res.ok) throw new Error(`Post not found: ${slug}`);

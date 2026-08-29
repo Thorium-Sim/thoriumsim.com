@@ -57,7 +57,7 @@ ORDER BY publishDate DESC;`);
 
       return context.render(<AdminNewslettersPage newsletters={results} />);
     },
-    async users(context) {
+    async users() {
       return new Response();
     },
     async subscribers(context) {

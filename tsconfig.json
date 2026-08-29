@@ -2,7 +2,7 @@
   "compilerOptions": {
     "strict": true,
     "lib": ["ES2024", "DOM", "DOM.Iterable"],
-    "types": ["node", "remix/assets/types/hmr"],
+    "types": ["bun", "vite/client", "@pitlane/dev/assets"],
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "target": "ESNext",

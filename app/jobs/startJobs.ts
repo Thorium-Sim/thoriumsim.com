@@ -12,7 +12,11 @@ function startWorker<JobType extends keyof JobTypes>(jobType: JobType) {
   return worker;
 }
 
-startWorker("sendEmail");
-startWorker("newsletterSend");
-
-queue.schedule("newsletterSend", { cron: "*/60 * * * *" });
+let started = false;
+export function startJobs() {
+  if (started) return;
+  startWorker("sendEmail");
+  startWorker("newsletterSend");
+  queue.schedule("newsletterSend", { cron: "*/60 * * * *" });
+  started = true;
+}

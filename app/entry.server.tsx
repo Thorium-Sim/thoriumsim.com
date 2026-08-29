@@ -14,6 +14,7 @@ import { user } from "./db/tables.ts";
 import { atmosphereController, authController } from "./actions/authController.tsx";
 import { adminController } from "./actions/adminController.tsx";
 import { auth, createSessionAuthScheme } from "remix/middleware/auth";
+import { startJobs } from "./jobs/startJobs.ts";
 
 type AppContext = MiddlewareContext<[ReturnType<typeof render>]>;
 
@@ -35,6 +36,11 @@ let sessionStorage = createCookieSessionStorage();
 
 export const router = createRouter<AppContext>({
   middleware: [
+    staticFiles("./public", { index: false, cacheControl: `public, max-age=31536000, immutable` }),
+    staticFiles("./dist/client", {
+      index: false,
+      cacheControl: `public, max-age=31536000, immutable`,
+    }),
     session(sessionCookie, sessionStorage),
     auth({
       schemes: [
@@ -52,7 +58,6 @@ export const router = createRouter<AppContext>({
       ],
     }),
     compression({ threshold: 2048 }),
-    staticFiles("./public", { index: false, cacheControl: `public, max-age=31536000, immutable` }),
     render(),
   ],
 });
@@ -61,3 +66,13 @@ router.map(routes, controller);
 router.map(routes.auth, authController);
 router.map(routes.auth.atmosphere, atmosphereController);
 router.map(routes.admin, adminController);
+
+export default router;
+
+if (import.meta.hot) {
+  import.meta.hot.accept();
+}
+
+if (process.env.NODE_ENV === "production") {
+  startJobs();
+}

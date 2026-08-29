@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "NODE_ENV=development bun run hmr.ts",
+    "dev": "vite",
+    "build": "vite build",
     "start": "NODE_ENV=production bun run server.ts",
     "test": "NODE_ENV=test bun test",
     "typecheck": "tsc --noEmit",
@@ -13,7 +14,7 @@
     "postatproto-add": "npm run atproto-build",
     "atproto-build": "lex build --lexicons app/atproto --override --import-ext '.ts' --out app/atproto",
     "migrate": "remix db",
-    "postinstall": "patch-package",
+    "postinstall": "bunx patch-package",
     "knip": "knip"
   },
   "dependencies": {
@@ -40,13 +41,16 @@
     "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
+    "@pitlane/dev": "^0.5.1",
+    "@types/bun": "^1.4.0",
     "@types/node": "^26.2.0",
     "@types/rss": "^0.0.32",
     "knip": "^6.32.2",
     "oxfmt": "^0.51.0",
     "oxlint": "^1.66.0",
     "patch-package": "^8.0.1",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2"
   },
   "engines": {
     "node": ">=24.3.0"

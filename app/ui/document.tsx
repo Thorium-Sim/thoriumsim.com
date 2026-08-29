@@ -1,6 +1,8 @@
 import { css, type Handle, type RemixNode } from "remix/ui";
 
-import { routes } from "../routes.ts";
+import { mergeAssets } from "@pitlane/dev/runtime";
+import clientAssets from "../entry.browser.ts?assets=client";
+import serverAssets from "../entry.server.tsx?assets=ssr";
 
 export interface DocumentProps {
   children?: RemixNode;
@@ -8,6 +10,8 @@ export interface DocumentProps {
 }
 
 export function Document(handle: Handle<DocumentProps>) {
+  let assets = mergeAssets(clientAssets, serverAssets);
+
   return () => {
     let { children, head } = handle.props;
     return (
@@ -60,6 +64,13 @@ html:has(.gallery-image) {
           </style>
           <link rel="alternate" type="application/rss+xml" title="Thorium Blog" href="/rss.xml" />
           <title>Thorium Nova</title>
+          {assets.css.map((attrs) => (
+            <link key={attrs.href} {...attrs} rel="stylesheet" />
+          ))}
+          <script async src={clientAssets.entry} type="module" />
+          {assets.js.map((attrs) => (
+            <link key={attrs.href} {...attrs} rel="modulepreload" />
+          ))}
           {head}
         </head>
         <body
@@ -116,7 +127,6 @@ html:has(.gallery-image) {
           >
             {children}
           </main>
-          <script type="module" src={routes.assets.href({ path: "app/assets/entry.ts" })}></script>
         </body>
       </html>
     );
