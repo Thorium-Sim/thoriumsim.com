@@ -12,3 +12,7 @@ dbs:
       path: db # change to whatever path you want
       endpoint: 532264959bf6572ae8a82ebfd3b65910.r2.cloudflarestorage.com # change this
       force-path-style: true
+
+logging:
+  level: warn
+  type: text
