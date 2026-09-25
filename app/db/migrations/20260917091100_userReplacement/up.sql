@@ -38,7 +38,7 @@ CREATE TABLE "UserRole" (
 );
 
 
-INSERT INTO User VALUES ('did:plc:yltnuhmi5446q5gixfz277lu', 'Alex', '', 'https://cdn.bsky.app/img/avatar/plain/did:plc:yltnuhmi5446q5gixfz277lu/bafkreidg4udaxb3vcz3cyqedqynrarxttwbwnnd65tngcplj6fo4eeum5i');
+INSERT INTO User VALUES ('did:plc:yltnuhmi5446q5gixfz277lu', 'ralexanderson.com', 'Alex', '', 'https://cdn.bsky.app/img/avatar/plain/did:plc:yltnuhmi5446q5gixfz277lu/bafkreidg4udaxb3vcz3cyqedqynrarxttwbwnnd65tngcplj6fo4eeum5i');
 INSERT INTO UserRole VALUES ('did:plc:yltnuhmi5446q5gixfz277lu','admin');
 
 

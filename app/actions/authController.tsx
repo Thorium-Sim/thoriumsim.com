@@ -131,7 +131,6 @@ export let authController = createController(routes.auth, {
         roles: string[];
       } | null;
 
-      console.log("User popover", !!session, !!user);
       return context.render(<UserPopover user={user} />);
     },
     async refresh(context) {

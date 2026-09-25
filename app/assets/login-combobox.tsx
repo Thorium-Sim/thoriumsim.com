@@ -156,7 +156,6 @@ function LoginCombobox(handle: Handle) {
           event.currentTarget.requestSubmit();
         }),
         on("input", (event) => {
-          console.log("input event");
           abortController.abort("cancelled");
           if (!(event.target instanceof HTMLInputElement)) return;
           const value = event.target.value;
