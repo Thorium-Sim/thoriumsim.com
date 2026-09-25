@@ -14,6 +14,7 @@ const envSchema = object({
   FROM_ADDRESS: optional(string()),
   SESSION_SECRET: string(),
   APP_ORIGIN: string(),
+  ATPROTO_PRIVATE_KEY_JWK: optional(string()),
 });
 let env: InferOutput<typeof envSchema> | null = null;
 

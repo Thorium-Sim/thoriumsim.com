@@ -3,6 +3,7 @@ import { renderToString } from "remix/ui/server";
 import { AwsClient } from "aws4fetch";
 import { getEnv } from "./env.ts";
 import { RateLimiter } from "limiter";
+import { unsafeHTML } from "remix/ui";
 const awsLimiter = new RateLimiter({ interval: "sec", tokensPerInterval: 70 });
 
 const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SES_ENDPOINT, FROM_ADDRESS } = getEnv();
@@ -170,7 +171,9 @@ export async function getEmailContent(input: string, email: string, broadcastId 
                 />
                 <div
                   style={{ padding: "20px" }}
-                  innerHTML={`${content.html}<img src="https://thoriumsim.com/email/trackingPixel?email=${email}&broadcastId=${broadcastId}"/>`}
+                  innerHTML={unsafeHTML(
+                    `${content.html}<img src="https://thoriumsim.com/email/trackingPixel?email=${email}&broadcastId=${broadcastId}"/>`,
+                  )}
                 ></div>
                 <div style={{ padding: "0 20px 20px 20px" }}>
                   <p

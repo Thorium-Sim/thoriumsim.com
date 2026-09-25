@@ -1,4 +1,4 @@
-import { belongsTo, column as c, hasMany, hasManyThrough, table } from "remix/data-table";
+import { column as c, hasMany, table } from "remix/data-table";
 
 // ---------------------------------------------------------------------------
 // Tables
@@ -6,32 +6,12 @@ import { belongsTo, column as c, hasMany, hasManyThrough, table } from "remix/da
 
 let user = table({
   name: "User",
-  primaryKey: "user_id",
+  primaryKey: "id",
   columns: {
-    user_id: c.integer().primaryKey().autoIncrement(),
-    email: c.text().unique("users_email_key"),
-    password: c.text(),
-    profilePictureUrl: c.text().nullable(),
+    id: c.text().primaryKey(),
+    avatar: c.text().nullable(),
     displayName: c.text().nullable(),
     bio: c.text().nullable(),
-    passwordResetToken: c.text().nullable(),
-    passwordResetExpire: c.timestamp().nullable(),
-  },
-});
-
-let connectedAccount = table({
-  name: "ConnectedAccount",
-  primaryKey: "connectedAccount_id",
-  columns: {
-    connectedAccount_id: c.integer().primaryKey().autoIncrement(),
-    user_id: c.integer().nullable(),
-    type: c.text(),
-    access_token: c.text().nullable(),
-    refresh_token: c.text().nullable(),
-    createdAt: c.timestamp().nullable(),
-    expiresAt: c.timestamp().nullable(),
-    account_id: c.text().nullable(),
-    issuer: c.text().nullable(),
   },
 });
 
@@ -50,7 +30,6 @@ let post = table({
   primaryKey: "post_id",
   columns: {
     post_id: c.integer().primaryKey().autoIncrement(),
-    user_id: c.integer(),
     publishDate: c.timestamp().nullable().defaultSql("CURRENT_DATE"),
     featuredImageUrl: c.text().nullable(),
     body: c.text().nullable(),
@@ -60,15 +39,6 @@ let post = table({
     excerpt: c.text().nullable(),
     newsletterDate: c.timestamp().nullable(),
     newsletterSent: c.boolean().default(false),
-  },
-});
-
-let role = table({
-  name: "Role",
-  primaryKey: "role_id",
-  columns: {
-    role_id: c.integer().primaryKey().autoIncrement(),
-    name: c.text().nullable(),
   },
 });
 
@@ -98,11 +68,20 @@ let subscriberEmailOpen = table({
 
 let userRole = table({
   name: "UserRole",
-  primaryKey: "userRole_id",
+  primaryKey: ["user", "role"],
   columns: {
-    userRole_id: c.integer().primaryKey().autoIncrement(),
-    user_id: c.integer().nullable(),
-    role_id: c.integer().nullable(),
+    user: c.text(),
+    role: c.text(),
+  },
+});
+
+let kv = table({
+  name: "KV",
+  primaryKey: ["scope", "key"],
+  columns: {
+    scope: c.text().notNull(),
+    key: c.text().notNull(),
+    value: c.text(),
   },
 });
 
@@ -118,18 +97,6 @@ let userRole = table({
 // in the API reference -- double check those before relying on this section.
 // ---------------------------------------------------------------------------
 
-let userConnectedAccounts = hasMany(user, connectedAccount, {
-  foreignKey: "user_id",
-  targetKey: "user_id",
-});
-let connectedAccountUser = belongsTo(connectedAccount, user, {
-  foreignKey: "user_id",
-  targetKey: "user_id",
-});
-
-let userPosts = hasMany(user, post, { foreignKey: "user_id", targetKey: "user_id" });
-let postUser = belongsTo(post, user, { foreignKey: "user_id", targetKey: "user_id" });
-
 let postNewsletterSubscriberSends = hasMany(post, newsletterSubscriberSends, {
   foreignKey: "post_id",
   targetKey: "post_id",
@@ -139,11 +106,7 @@ let subscriberNewsletterSends = hasMany(subscriber, newsletterSubscriberSends, {
   targetKey: "email",
 });
 
-let userUserRoles = hasMany(user, userRole, { foreignKey: "user_id", targetKey: "user_id" });
-let userRoles = hasManyThrough(user, role, {
-  through: userUserRoles,
-  throughForeignKey: "role_id",
-});
+let userRoles = hasMany(user, userRole, { foreignKey: "user", targetKey: "id" });
 
 let postSubscriberEmailOpens = hasMany(post, subscriberEmailOpen, {
   foreignKey: "broadcast_id",
@@ -156,21 +119,15 @@ let subscriberSubscriberEmailOpens = hasMany(subscriber, subscriberEmailOpen, {
 
 export {
   user,
-  connectedAccount,
   newsletterSubscriberSends,
   post,
-  role,
   subscriber,
   subscriberEmailOpen,
   userRole,
-  userConnectedAccounts,
-  connectedAccountUser,
-  userPosts,
-  postUser,
   postNewsletterSubscriberSends,
   subscriberNewsletterSends,
-  userUserRoles,
   userRoles,
   postSubscriberEmailOpens,
   subscriberSubscriberEmailOpens,
+  kv,
 };

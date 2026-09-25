@@ -48,13 +48,13 @@ export default function Header() {
           gap: "clamp(0.5rem,2.5vw,2rem)",
         })}
       >
-        <a mix={[linkStyle]} href="/about" rmx-document>
+        <a mix={[linkStyle]} href="/about" data-rmx-document>
           About
         </a>
-        <a mix={linkStyle} href="/blog" rmx-document>
+        <a mix={linkStyle} href="/blog" data-rmx-document>
           Blog
         </a>
-        <a mix={linkStyle} href={routes.gallery.href()} rmx-document>
+        <a mix={linkStyle} href={routes.gallery.href()} data-rmx-document>
           Gallery
         </a>
         <a mix={linkStyle} href="https://github.com/Thorium-Sim/thorium-nova/releases/latest">
@@ -63,7 +63,7 @@ export default function Header() {
         <a
           mix={linkStyle}
           href={routes.blogPost.href({ slug: "contributing-to-thorium-nova" })}
-          rmx-document
+          data-rmx-document
         >
           Contribute
         </a>

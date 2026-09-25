@@ -13,10 +13,9 @@ COPY app app
 COPY tsconfig.json tsconfig.json
 COPY vite.config.ts vite.config.ts
 
-# Build ATProto Lexicons
-RUN bun run atproto-build
-
 RUN bun run build
+
+RUN  bun build app/jobs/worker.ts --target bun --outfile dist/worker.ts
 
 FROM oven/bun:alpine AS run
 
@@ -30,8 +29,11 @@ RUN chmod +x litestream.sh
 
 COPY public public
 COPY package.json bun.lock patches ./
+COPY app/jobs jobs
 RUN bun i --production
 COPY --from=build /app/dist dist
+COPY --from=build /app/dist/worker.ts jobs/worker.ts
+COPY remix.json remix.json
 COPY server.ts server.ts
 
 EXPOSE 44100

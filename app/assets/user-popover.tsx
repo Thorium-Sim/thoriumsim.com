@@ -17,7 +17,11 @@ export const UserPopover = clientEntry(
 
       if (!user)
         return (
-          <a href={routes.auth.login.href()} mix={css({ textDecoration: "none" })} rmx-document>
+          <a
+            href={routes.auth.login.href()}
+            mix={css({ textDecoration: "none" })}
+            data-rmx-document
+          >
             Login
           </a>
         );

@@ -5,4 +5,7 @@ export default defineConfig({
   css: {
     transformer: "lightningcss",
   },
+  server: {
+    host: "0.0.0.0",
+  },
 });

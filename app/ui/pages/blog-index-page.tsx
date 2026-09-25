@@ -31,7 +31,7 @@ export function BlogIndex(
         "&:hover h2": { textDecoration: "underline", color: "white" },
         "&:hover p": { color: "white" },
       })}
-      rmx-document
+      data-rmx-document
     >
       <img
         loading={i > 6 ? "lazy" : undefined}

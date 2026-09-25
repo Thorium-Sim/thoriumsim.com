@@ -1,55 +1,30 @@
 import { createController } from "remix/router";
 import { routes } from "../routes.ts";
 import { LoginPage } from "../ui/pages/login-page.tsx";
-import {
-  completeAuth,
-  createAtmosphereAuthProvider,
-  finishExternalAuth,
-  startExternalAuth,
-  type AtmosphereAuthProfile,
-  type AtmosphereOAuthTokens,
-} from "remix/auth";
 import { getEnv } from "../utils/env.ts";
 import { redirect } from "remix/response/redirect";
 import { formData } from "remix/middleware/form-data";
-import { Client, l } from "@atproto/lex";
-import * as app from "../atproto/app.ts";
-import * as com from "../atproto/com.ts";
 import { db } from "../db.ts";
-import { connectedAccount, user, userConnectedAccounts, userRoles } from "../db/tables.ts";
+import { user, userRoles } from "../db/tables.ts";
 import { query } from "remix/data-table";
-import { Session } from "@remix-run/session";
+import { Session } from "remix/session";
 import { UserPopover } from "../assets/user-popover.tsx";
 import { ProfilePage } from "../ui/pages/profile-page.tsx";
 import { createCookie } from "remix/cookie";
-import { AtmosphereSession } from "../utils/AtmosphereSession.ts";
-
-const env = getEnv();
-
-const SCOPES = [
-  "atproto",
-  "account:email",
-  "blob:*/*",
-  "rpc:app.bsky.actor.getProfile?aud=did:web:api.bsky.app%23bsky_appview",
-];
-let keyPair = await crypto.subtle.generateKey({ name: "ECDSA", namedCurve: "P-256" }, true, [
-  "sign",
-  "verify",
-]);
-
-let atmosphereProvider = createAtmosphereAuthProvider({
-  clientId:
-    env.APP_ORIGIN === "http://localhost"
-      ? new URL(env.APP_ORIGIN)
-      : new URL("/oauth/client-metadata.json", env.APP_ORIGIN),
-  redirectUri:
-    env.APP_ORIGIN === "http://localhost"
-      ? new URL("http://127.0.0.1:44100/oauth/callback")
-      : new URL("/oauth/callback", env.APP_ORIGIN),
-  sessionSecret: env.SESSION_SECRET,
-  scopes: SCOPES,
-  clientAuthentication: { key: keyPair.privateKey, keyId: "thoriumsim-oauth" },
-});
+import { atmosphereOauthClient } from "../utils/AtmosphereAuth.ts";
+import { Client } from "@atcute/client";
+import {
+  CompositeDidDocumentResolver,
+  CompositeHandleResolver,
+  DohJsonHandleResolver,
+  LocalActorResolver,
+  PlcDidDocumentResolver,
+  WebDidDocumentResolver,
+  WellKnownHandleResolver,
+} from "@atcute/identity-resolver";
+import type { Did } from "@atcute/lexicons";
+import { isHandle } from "@atcute/lexicons/syntax";
+import { isDid } from "@atcute/lexicons/syntax";
 
 let savedHandlesCookie = createCookie("saved-handles", {
   secrets: [getEnv().SESSION_SECRET],
@@ -65,6 +40,23 @@ export interface SavedHandle {
   lastUsed: number;
 }
 
+const handleResolver = new CompositeHandleResolver({
+  methods: {
+    dns: new DohJsonHandleResolver({ dohUrl: "https://mozilla.cloudflare-dns.com/dns-query" }),
+    http: new WellKnownHandleResolver(),
+  },
+});
+const didResolver = new CompositeDidDocumentResolver({
+  methods: {
+    plc: new PlcDidDocumentResolver(),
+    web: new WebDidDocumentResolver(),
+  },
+});
+const actorResolver = new LocalActorResolver({
+  handleResolver,
+  didDocumentResolver: didResolver,
+});
+
 /** Keep cookie under ~4KB browser limits when many avatars are CDN URLs */
 const SAVED_HANDLE_AVATAR_MAX_CHARS = 900;
 
@@ -78,38 +70,38 @@ function truncateAvatarForCookie(avatar: string | null): string | null {
   return avatar.slice(0, SAVED_HANDLE_AVATAR_MAX_CHARS);
 }
 
-async function generateUserSession(session: Session, userId: number) {
-  const userRecord = await db.findOne(user, {
-    where: { user_id: userId },
-    with: {
-      roles: userRoles,
-      connectedAccount: userConnectedAccounts.where({ type: "atmosphere" }),
-    },
-  });
+function isPlcDid(input: unknown): input is Did<"plc"> {
+  return isDid(input) && input.startsWith("did:plc");
+}
+function isWebDid(input: unknown): input is Did<"web"> {
+  return isDid(input) && input.startsWith("did:web");
+}
+
+async function getHandle(userId: string) {
+  if (!isPlcDid(userId) && !isWebDid(userId)) throw new Error("Invalid User ID");
+  const doc = await actorResolver.resolve(userId);
+
+  return doc.handle;
+}
+
+async function generateUserSession(session: Session, userId: string) {
+  const [userRecord, handle] = await Promise.all([
+    db.findOne(user, {
+      where: { id: userId },
+      with: {
+        roles: userRoles,
+      },
+    }),
+    getHandle(userId),
+  ]);
 
   if (!userRecord) throw new Error("User not found");
-  const account = userRecord.connectedAccount[0];
-  if (!account || !account.access_token || !account.issuer)
-    throw new Error("User is not connected to Atmosphere account");
-  const client = new Client(
-    new AtmosphereSession(
-      account.account_id as `did:${string}:${string}`,
-      JSON.parse(account.access_token),
-      account.issuer,
-      async () => {},
-    ),
-  );
-
-  const profile = await client.call(app.bsky.actor.getProfile, {
-    actor: l.asAtIdentifierString(account.account_id),
-  });
-
   session.set("auth", {
     userId,
-    handle: profile.handle,
+    handle,
     displayName: userRecord.displayName,
-    avatar: userRecord.profilePictureUrl,
-    roles: userRecord.roles.flatMap((r) => r.name || []),
+    avatar: userRecord.avatar,
+    roles: userRecord.roles.flatMap((r) => r.role || []),
   });
 }
 
@@ -132,13 +124,14 @@ export let authController = createController(routes.auth, {
       const session = context.get(Session);
       // TODO August 7 2026 — fix this type
       const user = session?.get("auth") as unknown as {
-        userId: number;
+        userId: string;
         handle: string;
         displayName: string;
         avatar?: string;
         roles: string[];
       } | null;
 
+      console.log("User popover", !!session, !!user);
       return context.render(<UserPopover user={user} />);
     },
     async refresh(context) {
@@ -149,34 +142,10 @@ export let authController = createController(routes.auth, {
       return redirect("/");
     },
     oauthClientMetadata() {
-      return Response.json({
-        client_id: "https://thoriumsim.com/oauth/client-metadata.json",
-        client_name: "Thorium",
-        logo_uri: "https://thoriumsim.com/favicon.svg",
-        client_uri: "https://thoriumsim.com",
-        redirect_uris: ["https://thoriumsim.com/oauth/callback"],
-        scope: SCOPES.join(" "),
-        application_type: "web",
-        subject_type: "public",
-        response_types: ["code"],
-        grant_types: ["authorization_code", "refresh_token"],
-        token_endpoint_auth_method: "private_key_jwt",
-        token_endpoint_auth_signing_alg: "ES256",
-        dpop_bound_access_tokens: true,
-        jwks_uri: "https://thoriumsim.com/oauth/jwks.json",
-      });
+      return Response.json(atmosphereOauthClient.metadata);
     },
     async jwks() {
-      return Response.json({
-        keys: [
-          {
-            ...(await crypto.subtle.exportKey("jwk", keyPair.publicKey)),
-            kid: "thoriumsim-oauth",
-            alg: "ES256",
-            use: "sig",
-          },
-        ],
-      });
+      return Response.json(atmosphereOauthClient.jwks);
     },
   },
 });
@@ -185,110 +154,75 @@ export let atmosphereController = createController(routes.auth.atmosphere, {
   actions: {
     async login(context) {
       const handle = context.formData.get("handle") ?? context.formData.get("handle-input");
-      if (!handle || typeof handle !== "string") return redirect(routes.auth.login.href());
-      const provider = await atmosphereProvider.prepare(handle);
-      return startExternalAuth(provider, context, {
-        returnTo: context.url.searchParams.get("returnTo"),
+      if (!handle || typeof handle !== "string" || !isHandle(handle)) {
+        return redirect(routes.home.href());
+      }
+
+      const { url } = await atmosphereOauthClient.authorize({
+        target: { type: "account", identifier: handle },
+        prompt: "login",
+        state: { returnTo: context.url.searchParams.get("returnTo") },
       });
+
+      return redirect(url);
     },
     async createAccount(context) {
-      const provider = await atmosphereProvider.prepareCreateAccount("https://selfhosted.social");
-      return startExternalAuth(provider, context, {
-        returnTo: context.url.searchParams.get("returnTo"),
+      const { url } = await atmosphereOauthClient.authorize({
+        target: { type: "pds", serviceUrl: "https://selfhosted.social" },
+        prompt: "create",
+        state: { returnTo: context.url.searchParams.get("returnTo") },
       });
+      return redirect(url);
     },
     async callback(context) {
-      if (context.url.hostname === "127.0.0.1") {
-        const url = new URL(context.url);
-        url.hostname = "localhost";
-        return redirect(url);
-      }
+      const { session, state } = await atmosphereOauthClient.callback(context.url.searchParams);
+      const did = session.did;
+      const { returnTo } = state as { returnTo?: string };
 
-      let { result, returnTo } = await finishExternalAuth<
-        typeof context,
-        AtmosphereAuthProfile,
-        "atmosphere",
-        AtmosphereOAuthTokens
-      >(atmosphereProvider, context);
+      const client = new Client({ handler: session });
 
-      const client = new Client(
-        new AtmosphereSession(
-          result.profile.did as `did:${string}:${string}`,
-          result.tokens,
-          result.profile.pdsUrl,
-          async () => {},
-        ),
-      );
-
-      const [profileResult, serverSession] = await Promise.all([
-        client.call(app.bsky.actor.getProfile, {
-          actor: l.asAtIdentifierString(result.profile.did),
+      const [profileResult, existingUser, handle] = await Promise.all([
+        client.get("app.bsky.actor.getProfile", {
+          params: { actor: session.did },
         }),
-        client.call(com.atproto.server.getSession),
+        db.findOne(user, { where: { id: did } }),
+        getHandle(did),
       ]);
 
-      const [existingConnectedAccount, existingUser] = await Promise.all([
-        db.findOne(connectedAccount, {
-          where: { account_id: serverSession.did },
-        }),
-        db.findOne(user, { where: { email: serverSession.email } }),
-      ]);
-
-      const displayName =
-        profileResult.displayName || serverSession.handle || result.profile.handle;
-      let userId = existingConnectedAccount?.user_id;
-
-      if (existingConnectedAccount) {
-        await db.exec(
-          query(connectedAccount)
-            .where({ connectedAccount_id: existingConnectedAccount.connectedAccount_id })
-            .update({
-              access_token: JSON.stringify(result.tokens),
-              expiresAt: Number(result.tokens.expiresAt),
-              issuer: result.profile.pdsUrl,
-            }),
-        );
-      } else {
-        let userId = existingUser?.user_id;
-        if (!userId) {
-          const savedUser = await db.exec(
-            query(user).insert(
-              {
-                bio: profileResult.description,
-                displayName,
-                profilePictureUrl: profileResult.avatar,
-                email: serverSession.email,
-                password: "blank",
-              },
-              { returning: "*" },
-            ),
-          );
-          userId = savedUser.insertId as number;
-        }
-        await db.exec(
-          query(connectedAccount).insert({
-            user_id: userId,
-            account_id: serverSession.did,
-            access_token: JSON.stringify(result.tokens),
-            expiresAt: Number(result.tokens.expiresAt),
-            issuer: result.profile.pdsUrl,
-            refresh_token: null,
-            type: "atmosphere",
-          }),
-        );
+      let displayName: string = handle;
+      let bio = "";
+      let avatar = "";
+      if (profileResult.ok) {
+        displayName = profileResult.data.displayName || handle;
+        bio = profileResult.data.description || "";
+        avatar = profileResult.data.avatar || "";
       }
 
-      let handle = result.profile.handle || serverSession.handle;
+      let userId = existingUser?.id;
+      if (!userId) {
+        const savedUser = await db.exec(
+          query(user).insert(
+            {
+              bio,
+              displayName,
+              avatar,
+            },
+            { returning: "*" },
+          ),
+        );
+        userId = savedUser.insertId as string;
+      }
 
       if (userId) {
-        let session = completeAuth(context);
+        let session = context.get(Session)!;
+        session?.regenerateId();
         await generateUserSession(session, userId);
       }
 
       let savedHandles = JSON.parse(
         (await savedHandlesCookie.parse(context.headers.get("Cookie"))) || "[]",
       );
-      const storedAvatar = truncateAvatarForCookie(profileResult.avatar || null);
+      const storedAvatar = truncateAvatarForCookie(avatar || null);
       const updated = [
         { handle, avatar: storedAvatar, lastUsed: Date.now() },
         ...savedHandles.filter((s: { handle: string }) => s.handle !== handle),

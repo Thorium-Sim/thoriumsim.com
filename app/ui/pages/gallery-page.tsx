@@ -67,7 +67,7 @@ export function GalleryPage(handle: Handle<{ children?: RemixNode }>) {
           <a
             mix={css({ display: "block" })}
             href={routes.galleryImage.href({ image: i.url.split("/").at(-1)! })}
-            rmx-document
+            data-rmx-document
           >
             <figure mix={css({ margin: "0px", width: "100%" })}>
               <img
@@ -115,7 +115,7 @@ export function GalleryImage(handle: Handle<{ image: string }>) {
           }),
         ]}
         href={routes.gallery.href()}
-        rmx-document
+        data-rmx-document
       >
         <img
           src={`https://assets.thoriumsim.com/gallery/${handle.props.image}`}

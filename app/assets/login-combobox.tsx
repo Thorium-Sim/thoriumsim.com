@@ -59,6 +59,7 @@ export const LoginComboboxProvider = clientEntry(
         <form
           method="POST"
           action={routes.auth.atmosphere.login.href()}
+          data-rmx-document
           mix={css({ display: "flex", flexDirection: "column", gap: "0.75rem" })}
         >
           {handle.props.savedHandles.map((s) => (
@@ -147,14 +148,15 @@ function LoginCombobox(handle: Handle) {
     <form
       method="POST"
       action={routes.auth.atmosphere.login.href()}
-      rmx-document
+      data-rmx-document
       mix={[
         combobox.onComboboxChange((event) => {
           handle.context.get(LoginComboboxProvider).setLoading("login");
 
-          event.currentTarget.submit();
+          event.currentTarget.requestSubmit();
         }),
         on("input", (event) => {
+          console.log("input event");
           abortController.abort("cancelled");
           if (!(event.target instanceof HTMLInputElement)) return;
           const value = event.target.value;
@@ -317,6 +319,7 @@ function CreateAccountButton(handle: Handle) {
             <form
               action={routes.auth.atmosphere.createAccount.href()}
               method="POST"
+              data-rmx-document
               mix={on("submit", () => {
                 handle.context.get(LoginComboboxProvider).setLoading("create");
               })}

@@ -49,7 +49,7 @@ export const router = createRouter<AppContext>({
             return session.get("auth") as { userId: string } | null;
           },
           verify(value) {
-            return db.findOne(user, { where: { user_id: value.userId } });
+            return db.findOne(user, { where: { id: value.userId } });
           },
           invalidate(session) {
             session.unset("auth");

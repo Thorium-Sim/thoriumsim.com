@@ -71,7 +71,7 @@ export async function listPostsRaw() {
       };
     }),
   );
-  postData.sort((a, b) => b.publishedAt - a.publishedAt);
+  postData.filter((p) => p.publishedAt <= Date.now()).sort((a, b) => b.publishedAt - a.publishedAt);
   return postData;
 }
 

@@ -1,6 +1,6 @@
 import { getPostRaw, listPostsRaw } from "../utils/r2.ts";
 import { db } from "../db.ts";
-import { newsletterSubscriberSends, post, subscriber, user } from "../db/tables.ts";
+import { newsletterSubscriberSends, post, subscriber } from "../db/tables.ts";
 import { query } from "remix/data-table";
 import { getEmailContent } from "../utils/email.tsx";
 import { processMarkdown } from "../utils/processMarkdown.ts";
@@ -24,8 +24,6 @@ export async function sendNewsletter(queue: Queue<JobTypes>) {
     query(subscriber).select("subscriber_id", "email").where({ status: "active" }),
   );
 
-  const authorUser = await db.findOne(user, { where: { email: "alex@thoriumsim.com" } });
-
   console.info(`Sending ${postsToSend.length} posts to ${subscribers.length} subscribers.`);
 
   // Send the email to the subscribers
@@ -45,7 +43,6 @@ export async function sendNewsletter(queue: Queue<JobTypes>) {
           body: postBody,
           newsletterDate: Date.now(),
           newsletterSent: true,
-          user_id: authorUser?.user_id,
         },
         { returnRow: true },
       );
