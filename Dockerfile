@@ -34,6 +34,7 @@ RUN bun i --production
 COPY --from=build /app/dist dist
 COPY --from=build /app/dist/worker.ts jobs/worker.ts
 COPY remix.json remix.json
+COPY app/db/migrations app/db/migrations
 COPY server.ts server.ts
 
 EXPOSE 44100
