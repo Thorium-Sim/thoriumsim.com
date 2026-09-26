@@ -26,6 +26,14 @@ import type { Did } from "@atcute/lexicons";
 import { isHandle } from "@atcute/lexicons/syntax";
 import { isDid } from "@atcute/lexicons/syntax";
 
+export interface AuthRecord {
+  userId: string;
+  handle: string;
+  displayName: string;
+  avatar?: string;
+  roles: string[];
+}
+
 let savedHandlesCookie = createCookie("saved-handles", {
   secrets: [getEnv().SESSION_SECRET],
   httpOnly: true,
@@ -121,23 +129,15 @@ export let authController = createController(routes.auth, {
       return context.render(<ProfilePage />);
     },
     userPopover(context) {
-      const session = context.get(Session);
       // TODO August 7 2026 — fix this type
-      const user = session?.get("auth") as unknown as {
-        userId: string;
-        handle: string;
-        displayName: string;
-        avatar?: string;
-        roles: string[];
-      } | null;
+      const user = context.auth.ok ? context.auth.identity : null;
 
       return context.render(<UserPopover user={user} />);
     },
     async refresh(context) {
-      const session = context.get(Session);
-      const user = session?.get("auth");
-      if (!user || !session) throw new Error("Session not found");
-      await generateUserSession(session, user.userId);
+      if (!context.auth.ok) throw new Error("Session not found");
+
+      await generateUserSession(context.session, context.auth.identity.id);
       return redirect("/");
     },
     oauthClientMetadata() {

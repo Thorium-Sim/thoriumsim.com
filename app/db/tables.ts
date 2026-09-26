@@ -9,6 +9,7 @@ let user = table({
   primaryKey: "id",
   columns: {
     id: c.text().primaryKey(),
+    handle: c.text(),
     avatar: c.text().nullable(),
     displayName: c.text().nullable(),
     bio: c.text().nullable(),

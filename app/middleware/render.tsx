@@ -12,6 +12,10 @@ export function render() {
           async resolveFrame(src, target, frame) {
             let url = new URL(src, frame?.currentFrameSrc ?? context.url);
             let headers = new Headers({ accept: "text/html" });
+            const cookie = context.headers.get("cookie");
+            if (cookie) {
+              headers.set("cookie", cookie);
+            }
             if (target) headers.set("x-remix-target", target);
 
             let response = await context.router.fetch(new Request(url, { headers }));
