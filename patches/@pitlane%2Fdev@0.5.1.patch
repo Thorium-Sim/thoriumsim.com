@@ -1,0 +1,13 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+index fa1ddf10df0021262a55a209a732b5ea8805b4ee..aa5f8f3cf6a9686232561e585c680ea64ca0cccb 100644
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -7,7 +7,7 @@ import * as fs$1 from "node:fs/promises";
+ import { createServer, preview } from "vite";
+ import { parseSync } from "oxc-parser";
+ import MagicString from "magic-string";
+-import { transformComponentsForBrowser, transformComponentsForServer } from "remix/ui-hmr";
++import { transformComponentsForBrowser, transformComponentsForServer } from "remix/component-hmr";
+ //#region src/prerender-target.ts
+ /**
+ * Opens the built application for prerendering.

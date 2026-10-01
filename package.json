@@ -55,5 +55,8 @@
   },
   "engines": {
     "node": ">=24.3.0"
+  },
+  "patchedDependencies": {
+    "@pitlane/dev@0.5.1": "patches/@pitlane%2Fdev@0.5.1.patch"
   }
 }
