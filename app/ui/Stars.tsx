@@ -1,4 +1,4 @@
-import { type Handle, type RemixNode, css } from "remix/ui";
+import { type Handle, type RemixNode, css } from "remix/component";
 export function Stars(handle: Handle<{ children?: RemixNode }>) {
   const shadowsSmall = Array.from({ length: 700 })
     .map(() => `${Math.round(Math.random() * 2000)}px ${Math.round(Math.random() * 2000)}px #fff`)

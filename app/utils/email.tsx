@@ -1,9 +1,9 @@
 import { processMarkdown } from "./processMarkdown.ts";
-import { renderToString } from "remix/ui/server";
+import { renderToString } from "remix/component/server";
 import { AwsClient } from "aws4fetch";
 import { getEnv } from "./env.ts";
 import { RateLimiter } from "limiter";
-import { unsafeHTML } from "remix/ui";
+import { unsafeHTML } from "remix/component";
 const awsLimiter = new RateLimiter({ interval: "sec", tokensPerInterval: 70 });
 
 const { AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SES_ENDPOINT, FROM_ADDRESS } = getEnv();

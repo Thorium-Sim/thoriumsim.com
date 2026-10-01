@@ -1,4 +1,4 @@
-import { css, on, type Handle, type Props } from "remix/ui";
+import { css, on, type Handle, type Props } from "remix/component";
 
 export function FallbackImage(handle: Handle<Props<"img">>) {
   let failed = false;

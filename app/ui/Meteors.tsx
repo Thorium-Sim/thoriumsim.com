@@ -1,4 +1,4 @@
-import { css } from "remix/ui";
+import { css } from "remix/component";
 const maxDelay = 30;
 
 export function Meteors() {

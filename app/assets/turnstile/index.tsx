@@ -1,4 +1,4 @@
-import { on, ref, type Handle } from "remix/ui";
+import { on, ref, type Handle } from "remix/component";
 import type { ScriptOptions, TurnstileProps } from "./types.ts";
 
 const SCRIPT_URL = "https://challenges.cloudflare.com/turnstile/v0/api.js";

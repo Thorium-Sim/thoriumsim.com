@@ -1,11 +1,10 @@
-import { css } from "remix/ui";
+import { css } from "remix/component";
 
 import { Document } from "../document.tsx";
 import { Stars } from "../Stars.tsx";
 import { Meteors } from "../Meteors.tsx";
 import Header from "../Header.tsx";
 import { Logo } from "../Logo.tsx";
-import { button } from "remix/ui/button";
 import { SeoMeta } from "../../utils/seoMeta.tsx";
 import { routes } from "../../routes.ts";
 import { buttonStyles } from "../styles/button.ts";
@@ -104,7 +103,7 @@ export function HomePage() {
           href="https://github.com/Thorium-Sim/thorium-nova/releases/latest"
           target="_blank"
           rel="noopener noreferrer"
-          mix={[button({ tone: "primary" }), buttonStyles]}
+          mix={buttonStyles}
         >
           Download
         </a>

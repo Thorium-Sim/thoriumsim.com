@@ -1,4 +1,4 @@
-import type { ElementProps, Handle, MixValue } from "remix/ui";
+import type { ElementProps, Handle, MixValue } from "remix/component";
 export function Logo(handle: Handle<ElementProps & { color?: string; mix?: MixValue }>) {
   return () => {
     let props = handle.props;

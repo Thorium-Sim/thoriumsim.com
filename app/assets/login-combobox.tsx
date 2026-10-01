@@ -1,11 +1,9 @@
-import { clientEntry, createMixin, css, on, type Handle } from "remix/ui";
-import * as combobox from "remix/ui/combobox/primitives";
-import { input } from "remix/ui/input";
+import { clientEntry, createMixin, css, on, type Handle } from "remix/component";
+import * as combobox from "@remix-run/ui/combobox";
 import { routes } from "../routes.ts";
 import { FallbackImage } from "./fallback-image.tsx";
 import { modalBackground } from "../ui/styles/modalBackground.ts";
 import { debounce } from "../ui/utils/debounce.ts";
-import { button } from "remix/ui/button";
 import { buttonStyles } from "../ui/styles/button.ts";
 import { ChevronRight } from "../ui/icons/ChevronRight.tsx";
 import { Loader } from "../ui/icons/Loader.tsx";
@@ -69,7 +67,6 @@ export const LoginComboboxProvider = clientEntry(
               name="handle"
               value={s.handle}
               mix={[
-                button(),
                 buttonStyles,
                 css({
                   "--color": "0.5104 0.1 350",
@@ -174,7 +171,6 @@ function LoginCombobox(handle: Handle) {
           autoComplete="off"
           autoCorrect="off"
           mix={[
-            input({ size: "lg" }),
             inputStyle,
 
             combobox.input(),
@@ -246,7 +242,6 @@ function LoginButton(handle: Handle) {
       <button
         type="submit"
         mix={[
-          button(),
           buttonStyles,
           css({ "--color": "0.5104 0.1 350", width: "100%", display: "flex", marginTop: "0.5rem" }),
         ]}
@@ -309,7 +304,7 @@ function CreateAccountButton(handle: Handle) {
           </p>
           <div mix={css({ display: "flex", gap: "0.5rem", justifyContent: "end" })}>
             <button
-              mix={[button(), buttonStyles, css({ "--color": "0.6104 0.1 350" })]}
+              mix={[buttonStyles, css({ "--color": "0.6104 0.1 350" })]}
               command="close"
               commandFor="create-account"
             >
@@ -325,7 +320,6 @@ function CreateAccountButton(handle: Handle) {
             >
               <button
                 mix={[
-                  button(),
                   buttonStyles,
                   css({
                     "--color": "0.6104 0.2 350",
@@ -396,11 +390,7 @@ function CreateAccountButton(handle: Handle) {
           command="show-modal"
           commandFor="create-account"
           disabled={!!handle.context.get(LoginComboboxProvider).loading}
-          mix={[
-            button(),
-            buttonStyles,
-            css({ "--color": "0.5104 0.1 350", width: "100%", display: "flex" }),
-          ]}
+          mix={[buttonStyles, css({ "--color": "0.5104 0.1 350", width: "100%", display: "flex" })]}
         >
           {handle.context.get(LoginComboboxProvider).loading === "create" ? (
             <Loader />

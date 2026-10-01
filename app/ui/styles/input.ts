@@ -1,4 +1,4 @@
-import { css } from "remix/ui";
+import { css } from "remix/component";
 
 export const inputStyle = css({
   background: "oklch(0.0584 0.1716 311)",
@@ -6,6 +6,10 @@ export const inputStyle = css({
   border: "solid 1px oklch(0.2584 0.1716 311)",
   textShadow: "none",
   fontSize: "0.85rem",
+  padding: "0 1rem",
+  borderRadius: "0.5rem",
+  outline: "none",
+  width: "100%",
   height: "44px",
   "&:focus-within": {
     boxShadow: `

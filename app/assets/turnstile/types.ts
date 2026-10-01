@@ -1,4 +1,4 @@
-import type { Props } from "remix/ui";
+import type { Props } from "remix/component";
 import * as Turnstile from "./turnstile.ts";
 
 declare global {

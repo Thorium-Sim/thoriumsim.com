@@ -1,8 +1,6 @@
-import { clientEntry, css, on, type Handle } from "remix/ui";
+import { clientEntry, css, on, type Handle } from "remix/component";
 import { Turnstile } from "./turnstile/index.tsx";
-import { input } from "remix/ui/input";
 import { inputStyle } from "../ui/styles/input.ts";
-import { button } from "remix/ui/button";
 import { buttonStyles } from "../ui/styles/button.ts";
 import { routes } from "../routes.ts";
 import { Loader } from "../ui/icons/Loader.tsx";
@@ -83,7 +81,7 @@ export const NewsletterSignup = clientEntry(
                 content.
               </p>
               <input
-                mix={[input({ size: "lg" }), inputStyle]}
+                mix={inputStyle}
                 autoComplete="email"
                 name="email"
                 type="email"
@@ -103,7 +101,6 @@ export const NewsletterSignup = clientEntry(
               <button
                 type="submit"
                 mix={[
-                  button(),
                   buttonStyles,
                   css({
                     "--color": "0.5104 0.1 350",

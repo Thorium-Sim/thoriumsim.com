@@ -1,6 +1,6 @@
 import { routes } from "../routes.ts";
 import { Logo } from "./Logo.tsx";
-import { css, Frame } from "remix/ui";
+import { css, Frame } from "remix/component";
 
 const linkStyle = css({
   fontWeight: 400,

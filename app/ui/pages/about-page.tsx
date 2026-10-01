@@ -1,4 +1,4 @@
-import { Frame } from "remix/ui";
+import { Frame } from "remix/component";
 import { routes } from "../../routes.ts";
 import { Layout } from "../layout.tsx";
 import { proseStyles } from "../../utils/proseStyles.ts";

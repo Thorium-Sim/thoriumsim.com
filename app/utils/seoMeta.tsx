@@ -1,4 +1,4 @@
-import type { Handle } from "remix/ui";
+import type { Handle } from "remix/component";
 
 export function SeoMeta(
   handle: Handle<{ path: string; title?: string; description?: string; imageUrl?: string }>,

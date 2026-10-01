@@ -1,4 +1,4 @@
-import { css, type Handle, type RemixNode } from "remix/ui";
+import { css, type Handle, type RemixNode } from "remix/component";
 
 import { mergeAssets } from "@pitlane/dev/runtime";
 import clientAssets from "../entry.browser.ts?assets=client";

@@ -1,4 +1,4 @@
-import { css, type Handle } from "remix/ui";
+import { css, type Handle } from "remix/component";
 import { Layout } from "../layout.tsx";
 import { routes } from "../../routes.ts";
 import { SeoMeta } from "../../utils/seoMeta.tsx";

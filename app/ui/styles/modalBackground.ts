@@ -1,4 +1,4 @@
-import { css } from "remix/ui";
+import { css } from "remix/component";
 
 export const modalBackground = css({
   borderRadius: "8px",

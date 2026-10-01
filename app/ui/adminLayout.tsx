@@ -1,4 +1,4 @@
-import { css, type Handle, type MixInput, type RemixNode } from "remix/ui";
+import { css, type Handle, type MixInput, type RemixNode } from "remix/component";
 import { Document } from "./document.tsx";
 import { routes } from "../routes.ts";
 

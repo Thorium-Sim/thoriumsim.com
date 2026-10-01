@@ -1,4 +1,4 @@
-import { css, type Handle } from "remix/ui";
+import { css, type Handle } from "remix/component";
 import { Document } from "../document.tsx";
 import { LoginComboboxProvider } from "../../assets/login-combobox.tsx";
 import type { SavedHandle } from "../../actions/authController.tsx";

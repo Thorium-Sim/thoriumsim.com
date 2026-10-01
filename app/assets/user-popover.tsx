@@ -1,6 +1,6 @@
-import { clientEntry, css, type Handle } from "remix/ui";
+import { clientEntry, css, type Handle } from "remix/component";
 import { FallbackImage } from "./fallback-image.tsx";
-import * as menu from "remix/ui/menu/primitives";
+import * as menu from "@remix-run/ui/menu";
 import { routes } from "../routes.ts";
 import { modalBackground } from "../ui/styles/modalBackground.ts";
 

@@ -1,4 +1,4 @@
-import { css, Frame, type Handle } from "remix/ui";
+import { css, Frame, type Handle } from "remix/component";
 
 import { Document } from "../document.tsx";
 import Header from "../Header.tsx";

@@ -1,4 +1,4 @@
-import { css } from "remix/ui";
+import { css } from "remix/component";
 import Header from "../Header.tsx";
 import { Document } from "../document.tsx";
 import { Stars } from "../Stars.tsx";
