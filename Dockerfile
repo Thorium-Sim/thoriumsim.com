@@ -3,9 +3,7 @@ FROM oven/bun:alpine AS build
 WORKDIR /app
 
 COPY package.json bun.lock ./
-
 COPY patches ./patches
-
 RUN bun i
 
 COPY app app
@@ -28,7 +26,8 @@ COPY scripts/litestream.sh .
 RUN chmod +x litestream.sh
 
 COPY public public
-COPY package.json bun.lock patches ./
+COPY package.json bun.lock ./
+COPY patches ./patches
 COPY app/jobs jobs
 RUN bun i --production
 COPY --from=build /app/dist dist

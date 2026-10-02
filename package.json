@@ -18,7 +18,7 @@
     "@atcute/atproto": "^4.0.4",
     "@atcute/bluesky": "^4.0.22",
     "@atcute/client": "^5.1.2",
-    "@atcute/identity-resolver": "^2.0.1",
+    "@atcute/identity-resolver": "^2.0.2",
     "@atcute/identity-resolver-node": "^2.0.1",
     "@atcute/lexicons": "^2.1.1",
     "@atcute/oauth-node-client": "^2.0.1",
@@ -28,8 +28,8 @@
     "@types/unist": "^3.0.3",
     "aws4fetch": "^1.0.20",
     "cachified-adapter-sqlite": "^1.1.0",
-    "jose": "^6.2.9",
-    "limiter": "^3.0.0",
+    "jose": "^6.2.12",
+    "limiter": "^4.1.0",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-slug": "^6.0.0",
     "rehype-stringify": "^10.0.1",
@@ -43,20 +43,20 @@
     "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
-    "@pitlane/dev": "^0.5.1",
-    "@types/bun": "^1.4.0",
-    "@types/node": "^26.2.0",
+    "@pitlane/dev": "^0.6.4",
+    "@types/bun": "^1.4.2",
+    "@types/node": "^26.6.4",
     "@types/rss": "^0.0.32",
-    "knip": "^6.32.2",
-    "oxfmt": "^0.51.0",
-    "oxlint": "^1.66.0",
+    "knip": "^6.39.0",
+    "oxfmt": "^0.71.0",
+    "oxlint": "^1.86.0",
     "typescript": "^7.0.2",
-    "vite": "^8.2.2"
+    "vite": "^8.3.2"
   },
   "engines": {
     "node": ">=24.3.0"
   },
   "patchedDependencies": {
-    "@pitlane/dev@0.5.1": "patches/@pitlane%2Fdev@0.5.1.patch"
+    "@pitlane/dev@0.6.4": "patches/@pitlane%2Fdev@0.6.4.patch"
   }
 }
