@@ -54,7 +54,7 @@ export async function listPostsRaw() {
     if (!continuationMatch) break;
     continuationToken = continuationMatch[1];
   }
-  const postData = await Promise.all(
+  let postData = await Promise.all(
     keyList.map(async (key) => {
       const postText = await fetch(`https://assets.thoriumsim.com/posts/${key}/post.md`).then(
         (res) => res.text(),
@@ -71,7 +71,9 @@ export async function listPostsRaw() {
       };
     }),
   );
-  postData.filter((p) => p.publishedAt <= Date.now()).sort((a, b) => b.publishedAt - a.publishedAt);
+  postData = postData
+    .filter((p) => p.publishedAt <= Date.now())
+    .sort((a, b) => b.publishedAt - a.publishedAt);
   return postData;
 }
 

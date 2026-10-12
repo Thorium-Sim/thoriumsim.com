@@ -114,6 +114,8 @@ function LoginCombobox(handle: Handle) {
   let options: { label: string; imageUrl?: string; searchValue: string[]; value: string }[] = [];
   let inputNode: Element;
   let abortController = new AbortController();
+  handle.signal.addEventListener("abort", () => abortController.abort("unmounted"));
+
   let [debouncedTypeahead] = debounce(async (value: string) => {
     abortController = new AbortController();
     const url = new URL(ATPROTO_TYPEAHEAD_ENDPOINT);
