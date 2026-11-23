@@ -2,7 +2,7 @@ import { getPostRaw, listPostsRaw } from "../utils/r2.ts";
 import { db } from "../db.ts";
 import { newsletterSubscriberSends, post, subscriber } from "../db/tables.ts";
 import { query } from "remix/data-table";
-import { getEmailContent } from "../utils/email.tsx";
+import { getEmailContent, sendEmail } from "../utils/email.tsx";
 import { processMarkdown } from "../utils/processMarkdown.ts";
 import type { Queue } from "@thorium-sim/plainjob";
 import type { JobTypes } from "./types.ts";
@@ -50,7 +50,7 @@ export async function sendNewsletter(queue: Queue<JobTypes>) {
         subscribers.map(async (sub) => {
           const email = sub.email;
           try {
-            queue.add("sendEmail", {
+            await sendEmail({
               replyTo: ["hey@thoriumsim.com"],
               to: email,
               from: '"Alex from Thorium" hey@thoriumsim.com',

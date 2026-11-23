@@ -80,9 +80,8 @@ ORDER BY publishDate DESC;`);
     licenseGenerate: {
       middleware: [formData()],
       handler: async (context) => {
-        // @ts-expect-error
-
         const thoriumId = context.formData.get("thoriumId");
+        if (!thoriumId || typeof thoriumId !== "string") return new Response("Invalid ID");
         const license = await generateLicense(thoriumId);
 
         return new Response(license);

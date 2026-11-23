@@ -2,10 +2,8 @@ import { query } from "remix/data-table";
 import { db } from "../db.ts";
 import { subscriber, subscriberEmailOpen } from "../db/tables.ts";
 import { verifyTurnstileToken } from "./turnstile.ts";
-import { getQueue } from "../jobs/queue.ts";
-import { queueDbFile } from "../jobs/startJobs.ts";
 import { processMarkdown } from "./processMarkdown.ts";
-import { getEmailContent } from "./email.tsx";
+import { getEmailContent, sendEmail } from "./email.tsx";
 
 export async function trackEmailOpen(email: string | null, broadcastId: string | null) {
   if (!email || !broadcastId) return;
@@ -81,7 +79,7 @@ export async function subscribe(email: string, turnstileToken: string) {
     throw new Error("There was an error subscribing. Reload and try again.");
   }
 
-  getQueue(queueDbFile).add("sendEmail", {
+  await sendEmail({
     replyTo: ["hey@thoriumsim.com"],
     to: email,
     from: '"Alex from Thorium" hey@thoriumsim.com',

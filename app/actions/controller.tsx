@@ -112,13 +112,12 @@ export default createController(routes, {
     newsletterSubscribe: {
       middleware: [formData()],
       handler: async (context) => {
-        // @ts-expect-error The formData middleware should
-        // be adding the type here
         const email = context.formData.get("email");
-        // @ts-expect-error
         const turnstileResponse = context.formData.get("cf-turnstile-response");
-
         try {
+          if (!email || typeof email !== "string") throw new Error("Invalid Email Address");
+          if (!turnstileResponse || typeof turnstileResponse !== "string")
+            throw new Error("Invalid Captcha");
           await subscribe(email, turnstileResponse);
           return new Response();
         } catch (error) {

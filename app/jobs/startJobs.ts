@@ -14,10 +14,6 @@ function startWorker<JobType extends keyof JobTypes>(jobType: JobType) {
     jobType,
     async (job) => {
       switch (job.type) {
-        case "sendEmail":
-          if (!job.data) return;
-          await sendEmail(job.data);
-          break;
         case "newsletterSend":
           await sendNewsletter(queue);
           break;
@@ -45,7 +41,6 @@ let started = false;
 export function startJobs() {
   if (started) return;
   console.info("Starting workers...")
-  startWorker("sendEmail");
   startWorker("newsletterSend");
   queue.schedule("newsletterSend", { cron: "*/60 * * * *" });
   started = true;

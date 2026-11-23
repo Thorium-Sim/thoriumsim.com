@@ -39,7 +39,7 @@ export async function sendEmail({
     return;
   }
   await awsLimiter.removeTokens(1);
-
+  console.info("Sending email", subject, "to", to);
   await awsClient.fetch(`https://${sesEndpoint}/v2/email/outbound-emails`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
