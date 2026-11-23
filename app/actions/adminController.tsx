@@ -7,6 +7,12 @@ import { subscriber, user } from "../db/tables.ts";
 import { AdminSubscribersPage } from "../ui/pages/admin-subscribers-page.tsx";
 import { sql } from "remix/data-table";
 import { AdminNewslettersPage } from "../ui/pages/admin-newsletters-page.tsx";
+import { sendNewsletter } from "../jobs/newsletterSend.ts";
+import { getQueue } from "../jobs/queue.ts";
+import { queueDbFile } from "../jobs/startJobs.ts";
+import { AdminLicensePage } from "../ui/pages/admin-license.tsx";
+import { formData } from "remix/middleware/form-data";
+import { generateLicense } from "../utils/licensing.ts";
 
 export let adminController = createController(routes.admin, {
   middleware: [ensureAdmin()],
@@ -63,6 +69,24 @@ ORDER BY publishDate DESC;`);
     async subscribers(context) {
       const subscribers = await db.findMany(subscriber, { orderBy: ["created_at", "desc"] });
       return context.render(<AdminSubscribersPage subscribers={subscribers} />);
+    },
+    async sendNewsletter() {
+      await sendNewsletter(getQueue(queueDbFile));
+      return new Response("Newsletters sent");
+    },
+    license(context) {
+      return context.render(<AdminLicensePage />);
+    },
+    licenseGenerate: {
+      middleware: [formData()],
+      handler: async (context) => {
+        // @ts-expect-error
+
+        const thoriumId = context.formData.get("thoriumId");
+        const license = await generateLicense(thoriumId);
+
+        return new Response(license);
+      },
     },
   },
 });

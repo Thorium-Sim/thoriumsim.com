@@ -15,6 +15,7 @@ import { atmosphereController, authController } from "./actions/authController.t
 import { adminController } from "./actions/adminController.tsx";
 import { auth, createSessionAuthScheme } from "remix/middleware/auth";
 import { startJobs } from "./jobs/startJobs.ts";
+import { NotFound } from "./ui/pages/notFound.tsx";
 
 type AppContext = MiddlewareContext<
   [ReturnType<typeof render>, ReturnType<typeof session>, typeof authMiddleware]
@@ -83,7 +84,9 @@ router.map(routes, controller);
 router.map(routes.auth, authController);
 router.map(routes.auth.atmosphere, atmosphereController);
 router.map(routes.admin, adminController);
-
+router.get("/*", (context) => {
+  return context.render(<NotFound />, { status: 404 });
+});
 export default router;
 
 if (import.meta.hot) {

@@ -33,6 +33,7 @@ export function AdminLayout(
           <a href={routes.admin.index.href()}>Dashboard</a>
           <a href={routes.admin.subscribers.href()}>Subscribers</a>
           <a href={routes.admin.newsletters.href()}>Newsletters</a>
+          <a href={routes.admin.license.href()}>License</a>
         </div>
         <div mix={css({ padding: "2rem" })}>{handle.props.children}</div>
       </div>

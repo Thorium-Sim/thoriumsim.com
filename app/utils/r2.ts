@@ -104,7 +104,7 @@ export function getAboutContent() {
 }
 
 export async function getPostRaw(slug: string) {
-  const res = await client.fetch(`${ENDPOINT}/posts/${slug}/post.md`);
+  const res = await client.fetch(`${ENDPOINT}/posts/${slug.toLowerCase()}/post.md`);
   if (!res.ok) throw new Error(`Post not found: ${slug}`);
   const raw = await res.text();
   const { data, content } = matter(raw);
@@ -119,4 +119,10 @@ export async function getPostRaw(slug: string) {
     raw: content,
     html,
   };
+}
+
+export async function getLicenseSigningKey() {
+  const res = await client.fetch(`${ENDPOINT}/licenseSigningKey.pem`);
+  const text = await res.text()
+  return text;
 }

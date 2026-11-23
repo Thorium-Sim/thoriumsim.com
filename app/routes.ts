@@ -19,7 +19,10 @@ export const routes = route({
     index: "/",
     subscribers: "/subscribers",
     newsletters: "/newsletters",
+    license: "/license",
+    licenseGenerate: post("/license/generate"),
     users: "/users",
+    sendNewsletter: "/sendNewsletter"
   }),
   auth: {
     login: "/login",
