@@ -8,6 +8,7 @@ import { getQueue } from "./queue.ts";
 const filename = process.argv[2];
 const jobType = process.argv[3] as keyof JobTypes;
 
+console.info('Starting worker for', jobType)
 const queue = getQueue(filename);
 
 if (!filename) {

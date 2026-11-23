@@ -13,6 +13,7 @@ function startWorker<JobType extends keyof JobTypes>(jobType: JobType) {
 let started = false;
 export function startJobs() {
   if (started) return;
+  console.info("Starting workers...")
   startWorker("sendEmail");
   startWorker("newsletterSend");
   queue.schedule("newsletterSend", { cron: "*/60 * * * *" });
